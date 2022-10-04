@@ -4,7 +4,7 @@
 
 ### Commit 5b5d91 02_04_2020
 
-```
+```solidity
     mapping (address => uint256) private _balances;
     mapping (address => mapping (address => uint256)) private _allowances;
     uint256 private _totalSupply;
@@ -13,7 +13,7 @@
 
 ### 0408e51 02_04_2020
 
-```
+```solidity
     mapping (address => uint256) private _balances;
     mapping (address => mapping (address => uint256)) private _allowances;
     uint256 private _totalSupply;
@@ -25,7 +25,7 @@
 
 ### Commit  b8403b 04_02_2021
 
-```
+```solidity
     mapping (address => uint256) private _balances;
     mapping (address => mapping (address => uint256)) private _allowances;
     uint256 private _totalSupply;
@@ -39,7 +39,7 @@
 
 ### ad3c18 26_05_2021
 
-```
+```solidity
    bytes32 private constant _DELEGATION_TYPEHASH = keccak256("Delegation(address delegatee,uint256 nonce,uint256 expiry)");
     mapping (address => address) private _delegates;
     mapping (address => Checkpoint[]) private _checkpoints;
@@ -47,7 +47,7 @@
 
 ### f6efd8 27_05_2021
 
-```
+```solidity
     bytes32 private constant _DELEGATION_TYPEHASH = keccak256("Delegation(address delegatee,uint256 nonce,uint256 expiry)");
     mapping (address => address) private _delegates;
     mapping (address => Checkpoint[]) private _checkpoints;
@@ -56,7 +56,7 @@
 
 ### e3661a 04_06_2021
 
-```
+```solidity
     struct Checkpoint { uint32  fromBlock; uint224 votes; }
     bytes32 private constant _DELEGATION_TYPEHASH = keccak256("Delegation(address delegatee,uint256 nonce,uint256 expiry)");
     mapping (address => address) private _delegates;
@@ -69,7 +69,7 @@
 
 ### 4e4546 12_12_2019
 
-```
+```solidity
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -83,7 +83,7 @@
 
 ### 5b15d5 13_12_2019
 
-```
+```solidity
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -98,7 +98,7 @@
 
 ### 55ae25 07_02_2020
 
-```
+```solidity
     string public constant name = 'Uniswap V2';
     string public constant symbol = 'UNI-V2';
     uint8 public constant decimals = 18;
@@ -112,7 +112,7 @@
 
 ### 986d24 03_02_2020
 
-```
+```solidity
     string public constant name = 'Uniswap V2';
     string public constant symbol = 'UNI-V2';
     uint8 public constant decimals = 18;
@@ -127,7 +127,7 @@
 
 ### e382d7 31_01_2020
 
-```
+```solidity
     string public constant name = 'Uniswap V2';
     string public constant symbol = 'UNI-V2';
     uint8 public constant decimals = 18;
@@ -146,7 +146,7 @@
 
 ### 91516b_02_06_2020
 
-```
+```solidity
     mapping (uint256 => mapping(address => uint256)) private _balances;
     mapping (address => mapping(address => bool)) private _operatorApprovals;
     bytes4 private constant _INTERFACE_ID_ERC1155 = 0xd9b67a26;
@@ -154,7 +154,7 @@
 
 ### a81e94_03_06_2020
 
-```
+```solidity
     mapping (uint256 => mapping(address => uint256)) private _balances;
     mapping (address => mapping(address => bool)) private _operatorApprovals;
     string private _uri;
@@ -164,7 +164,7 @@
 
 ### 602059 29_01_2021
 
-```
+```solidity
     mapping (uint256 => mapping(address => uint256)) private _balances;
     mapping (address => mapping(address => bool)) private _operatorApprovals;
     string private _uri;
@@ -175,7 +175,7 @@
 
 
 ### 699aa8 31_10_2019
-```
+```solidity
     ![#1589F0](function transferFrom(address from, address to, uint256 value) external returns (bool) {})
     ![#1589F0](function burnFrom(address from, uint256 value) external {})
 
@@ -183,12 +183,12 @@
 
 ### 7417b2 28_10_2019
 
-```
+```solidity
     ![#1589F0](function approveMeta(address owner,	address spender, uint256 value,	uint256 nonce, uint256 expiration, uint8 v,bytes32 r, bytes32 s) external {})
 ```
 
 ### c9d0ba 18_12_2019
-```
+```solidity
     ![#f03c15](function burn(uint value) external {})
     ![#1589F0](function unsafeBurn(uint value) external {})
 ```
@@ -197,7 +197,7 @@ Obs: Alteração do nome da função.
 
 ### e5b8db 25_10_2019
 
-```
+```solidity
     ![#1589F0](function mint(address to, uint256 value) internal {})
 ```
 
@@ -206,7 +206,7 @@ Obs: Alteração do nome da função.
 
 
 ### 0a9709 29_03_2016
-```
+```solidity
     ![#1589F0](function registerDao(address _dao) ifOwner returns (bool success) {})
     ![#1589F0](function registerSeller(address _tokensales) ifDao returns (bool success) {})
 ```
