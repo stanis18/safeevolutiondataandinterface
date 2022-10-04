@@ -2,7 +2,7 @@
 
 ## OpenZeppelin ERC20
 
-#### Commit 5b5d91 02_04_2020
+#### 5b5d91 02_04_2020
 
 ```solidity
     mapping (address => uint256) private _balances;
@@ -23,7 +23,7 @@
 
 ```
 
-#### Commit  b8403b 04_02_2021
+#### b8403b 04_02_2021
 
 ```solidity
     mapping (address => uint256) private _balances;
