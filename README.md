@@ -1,3 +1,332 @@
+**ERC721**
+
+## ERC721A
+
+
+
+#### fb2262 12_02_2022
+
+```solidity
+    struct TokenOwnership {
+        address addr;
+        uint64 startTimestamp;
+    ++  bool burned;
+    }
+
+    struct AddressData {
+        uint64 balance;
+        uint64 numberMinted;
+    ++  uint64 numberBurned;
+    }
+
+    uint128 internal _currentIndex;
+    uint128 internal _burnCounter;
+    string private _name;
+    string private _symbol;
+
+    mapping(uint256 => TokenOwnership) internal _ownerships;
+    mapping(address => AddressData) private _addressData;
+    mapping(uint256 => address) private _tokenApprovals;
+    mapping(address => mapping(address => bool)) private _operatorApprovals;
+```
+
+#### ddd119 18_02_2022
+
+```solidity
+    struct TokenOwnership {
+        address addr;
+        uint64 startTimestamp;
+        bool burned;
+    }
+
+    struct AddressData {
+        uint64 balance;
+        uint64 numberMinted;
+        uint64 numberBurned;
+    ++  uint64 aux;
+    }
+
+    uint256 internal _currentIndex;
+    uint256 internal _burnCounter;
+    string private _name;
+    string private _symbol;
+
+    mapping(uint256 => TokenOwnership) internal _ownerships;
+    mapping(address => AddressData) private _addressData;
+    mapping(uint256 => address) private _tokenApprovals;
+    mapping(address => mapping(address => bool)) private _operatorApprovals;
+```
+
+
+
+#### 3783cc 16_05_2022
+
+```solidity
+    uint256 private constant BITMASK_ADDRESS_DATA_ENTRY = (1 << 64) - 1;
+    uint256 private constant BITPOS_NUMBER_MINTED = 64;
+    uint256 private constant BITPOS_NUMBER_BURNED = 128;
+    uint256 private constant BITPOS_AUX = 192;
+    uint256 private constant BITMASK_AUX_COMPLEMENT = (1 << 192) - 1;
+    uint256 private constant BITPOS_START_TIMESTAMP = 160;
+    uint256 private constant BITMASK_BURNED = 1 << 224;
+    uint256 private constant BITPOS_NEXT_INITIALIZED = 225;
+    uint256 private constant BITMASK_NEXT_INITIALIZED = 1 << 225;
+    uint256 internal _currentIndex;
+    uint256 internal _burnCounter;
+
+    string private _name;
+    string private _symbol;
+  
+    mapping(uint256 => uint256) private _packedOwnerships;
+    mapping(address => uint256) private _packedAddressData;
+    mapping(uint256 => address) private _tokenApprovals;
+    mapping(address => mapping(address => bool)) private _operatorApprovals;
+
+    // Example.. 
+    
+    function balanceOf(address owner) public view override returns (uint256) {
+        if (owner == address(0)) revert BalanceQueryForZeroAddress();
+        return uint256(_addressData[owner].balance);
+    }
+    function balanceOf(address owner) public view override returns (uint256) {
+        if (owner == address(0)) revert BalanceQueryForZeroAddress();
+        return _packedAddressData[owner] & BITMASK_ADDRESS_DATA_ENTRY;
+    }
+
+    function _exists(uint256 tokenId) internal view returns (bool) {
+        return _startTokenId() <= tokenId && tokenId < _currentIndex && !_ownerships[tokenId].burned;
+    }
+    function _exists(uint256 tokenId) internal view returns (bool) {
+        return _startTokenId() <= tokenId &&  tokenId < _currentIndex &&  _packedOwnerships[tokenId] & BITMASK_BURNED == 0; 
+    }
+```
+
+#### 8f4644 11_07_2022
+
+```solidity
+    struct TokenApprovalRef {
+        address value;
+    }
+
+    uint256 private constant BITMASK_ADDRESS_DATA_ENTRY = (1 << 64) - 1;
+    uint256 private constant BITPOS_NUMBER_MINTED = 64;
+    uint256 private constant BITPOS_NUMBER_BURNED = 128;
+    uint256 private constant BITPOS_AUX = 192;
+    uint256 private constant BITMASK_AUX_COMPLEMENT = (1 << 192) - 1;
+    uint256 private constant BITPOS_START_TIMESTAMP = 160;
+    uint256 private constant BITMASK_BURNED = 1 << 224;
+    uint256 private constant BITPOS_NEXT_INITIALIZED = 225;
+    uint256 private constant BITMASK_NEXT_INITIALIZED = 1 << 225;
+    uint256 private constant BITPOS_EXTRA_DATA = 232;
+    uint256 private constant BITMASK_EXTRA_DATA_COMPLEMENT = (1 << 232) - 1;
+    uint256 private constant BITMASK_ADDRESS = (1 << 160) - 1;
+    uint256 private constant MAX_MINT_ERC2309_QUANTITY_LIMIT = 5000;
+    uint256 private _currentIndex;
+    uint256 private _burnCounter;
+    
+    string private _name;
+    string private _symbol;
+   
+    mapping(uint256 => uint256) private _packedOwnerships;
+    mapping(address => uint256) private _packedAddressData;
+    mapping(uint256 => TokenApprovalRef) private _tokenApprovals;
+    mapping(address => mapping(address => bool)) private _operatorApprovals;
+
+    
+    function approve(address to, uint256 tokenId) public virtual override {
+        address owner = ownerOf(tokenId);
+
+        if (_msgSenderERC721A() != owner)
+            if (!isApprovedForAll(owner, _msgSenderERC721A())) {
+                revert ApprovalCallerNotOwnerNorApproved();
+            }
+        _tokenApprovals[tokenId] = to;
+        emit Approval(owner, to, tokenId);
+    }
+
+
+    function approve(address to, uint256 tokenId) public virtual override {
+        address owner = ownerOf(tokenId);
+
+        if (_msgSenderERC721A() != owner)
+            if (!isApprovedForAll(owner, _msgSenderERC721A())) {
+                revert ApprovalCallerNotOwnerNorApproved();
+            }
+
+        _tokenApprovals[tokenId].value = to;
+        emit Approval(owner, to, tokenId);
+    }
+```
+
+## OpenZeppelin ERC721
+
+#### b7d60f 17_01_2019
+
+```solidity
+    bytes4 private constant _ERC721_RECEIVED = 0x150b7a02;
+
+    mapping (uint256 => address) private _tokenOwner;
+
+    mapping (uint256 => address) private _tokenApprovals;
+
+    mapping (address => uint256) private _ownedTokensCount;
+
+    mapping (address => mapping (address => bool)) private _operatorApprovals;
+
+    bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
+
+    // Example... 
+     function transferFrom(address from, address to, uint256 tokenId) public {
+        require(_isApprovedOrOwner(msg.sender, tokenId));
+        _transferFrom(from, to, tokenId);
+    }
+    function _transferFrom(address from, address to, uint256 tokenId) internal {
+        require(ownerOf(tokenId) == from);
+        require(to != address(0));
+        _clearApproval(tokenId);
+        _ownedTokensCount[from] = _ownedTokensCount[from].sub(1);
+        _ownedTokensCount[to] = _ownedTokensCount[to].add(1);
+        _tokenOwner[tokenId] = to;
+        emit Transfer(from, to, tokenId);
+    }
+```
+
+
+
+#### 07603d 21_01_2019
+
+```solidity
+    library Counters {
+        using SafeMath for uint256;
+
+        struct Counter {
+            uint256 _value; 
+        }
+    }
+    
+    bytes4 private constant _ERC721_RECEIVED = 0x150b7a02;
+
+    mapping (uint256 => address) private _tokenOwner;
+    mapping (uint256 => address) private _tokenApprovals;
+
+    mapping (address => Counters.Counter) private _ownedTokensCount;
+    mapping (address => mapping (address => bool)) private _operatorApprovals;
+    bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
+
+    // Example... 
+
+    function transferFrom(address from, address to, uint256 tokenId) public {
+        require(_isApprovedOrOwner(msg.sender, tokenId));
+        _transferFrom(from, to, tokenId);
+    }
+    function _transferFrom(address from, address to, uint256 tokenId) internal {
+        require(ownerOf(tokenId) == from);
+        require(to != address(0));
+        _clearApproval(tokenId);
+        _ownedTokensCount[from].decrement();
+        _ownedTokensCount[to].increment();
+        _tokenOwner[tokenId] = to;
+        emit Transfer(from, to, tokenId);
+    }
+```
+
+#### bd0778 02_04_2020
+
+```solidity
+    mapping (address => EnumerableSet.UintSet) private _holderTokens;
+
+    EnumerableMap.UintToAddressMap private _tokenOwners;
+
+    mapping (uint256 => address) private _tokenApprovals;
+    mapping (address => mapping (address => bool)) private _operatorApprovals;
+    mapping(uint256 => string) private _tokenURIs;
+
+    string private _name;
+    string private _symbol;
+    string private _baseURI;
+
+    bytes4 private constant _ERC721_RECEIVED = 0x150b7a02;
+    bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
+    bytes4 private constant _INTERFACE_ID_ERC721_METADATA = 0x5b5e139f;
+    bytes4 private constant _INTERFACE_ID_ERC721_ENUMERABLE = 0x780e9d63;
+
+
+    library EnumerableSet {
+        struct Set {
+            bytes32[] _values;
+            mapping (bytes32 => uint256) _indexes;
+        }
+    }
+
+    library EnumerableMap {
+        struct MapEntry {
+            bytes32 _key;
+            bytes32 _value;
+        }
+        struct Map {
+            MapEntry[] _entries;
+            mapping (bytes32 => uint256) _indexes;
+        }
+    }
+
+    // Example... 
+
+    function transferFrom(address from, address to, uint256 tokenId) public virtual override {
+        require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: transfer caller is not owner nor approved");
+        _transfer(from, to, tokenId);
+    }
+
+    function _transfer(address from, address to, uint256 tokenId) internal virtual {
+        require(ownerOf(tokenId) == from, "ERC721: transfer of token that is not own");
+        require(to != address(0), "ERC721: transfer to the zero address");
+
+        _beforeTokenTransfer(from, to, tokenId);
+        _approve(address(0), tokenId);
+
+        _holderTokens[from].remove(tokenId);
+        _holderTokens[to].add(tokenId);
+        _tokenOwners.set(tokenId, to);
+        emit Transfer(from, to, tokenId);
+    }
+
+```
+
+
+#### 09734e 21_01_2021
+
+```solidity
+    string private _name;
+    string private _symbol;
+
+    mapping (uint256 => address) private _owners;
+
+    mapping (address => uint256) private _balances;
+
+    mapping (uint256 => address) private _tokenApprovals;
+
+    mapping (address => mapping (address => bool)) private _operatorApprovals;
+
+    // Example... 
+
+    function _safeTransfer(address from, address to, uint256 tokenId, bytes memory _data) internal virtual {
+        _transfer(from, to, tokenId);
+        require(_checkOnERC721Received(from, to, tokenId, _data), "ERC721: transfer to non ERC721Receiver implementer");
+    }
+
+    function _transfer(address from, address to, uint256 tokenId) internal virtual {
+        require(ERC721.ownerOf(tokenId) == from, "ERC721: transfer of token that is not own");
+        require(to != address(0), "ERC721: transfer to the zero address");
+        _beforeTokenTransfer(from, to, tokenId);
+        _approve(address(0), tokenId);
+
+        _balances[from] -= 1;
+        _balances[to] += 1;
+        _owners[tokenId] = to;
+        emit Transfer(from, to, tokenId);
+    }
+```
+
+
 **ERC20**
 
 ## OpenZeppelin ERC20
