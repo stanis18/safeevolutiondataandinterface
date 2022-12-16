@@ -784,3 +784,124 @@ contract DSToken is IDSToken, ERC20, Owned, Utils {
 ...
 }    
 ```
+
+
+### Crypto-Kitties
+
+
+#### 0bf1bc 12_10_2020
+
+```solidity
+function getKitty(uint256 _kittyId)
+        external
+        view
+        returns (
+            uint256 kittyId,
+            uint256 genes,
+            uint64 birthTime,
+            uint64 cooldownEndTime,
+            uint32 mumId,
+            uint32 dadId,
+            uint16 generation,
+            uint16 cooldownIndex,
+       ++   address owner
+        )
+    {
+        Kitty storage kitty = kitties[_kittyId];
+        
+        kittyId = _kittyId;
+        genes = kitty.genes;
+        birthTime = kitty.birthTime;
+        cooldownEndTime = kitty.cooldownEndTime;
+        mumId = kitty.mumId;
+        dadId = kitty.dadId;
+        generation = kitty.generation;
+        cooldownIndex = kitty.cooldownIndex;
+    ++  owner = kittyToOwner[_kittyId];
+    }
+```
+
+#### a92c47 14_08_2020
+
+```solidity
+    contract KittyContract is IERC721 {
+        ...
+        ++ bytes4 _INTERFACE_ID_ERC165 = 0x01ffc9a7;
+        ++ bytes4 _INTERFACE_ID_ERC721 = 0x80ac58cd;
+
+
+        ++ function supportsInterface(bytes4 _interfaceId)
+            external
+            view
+            returns (bool)
+        {
+            return (_interfaceId == _INTERFACE_ID_ERC165 ||
+                _interfaceId == _INTERFACE_ID_ERC721);
+        }
+    ...
+    }
+```
+
+#### db0846 13_08_2020
+
+```solidity
+++    function isKittyOwner(uint256 _kittyId) public view returns (bool) {
+        return msg.sender == kittyToOwner[_kittyId];
+    }
+
+++ function transferFrom(
+        address _from,
+        address _to,
+        uint256 _tokenId
+    ) external onlyApproved(_tokenId) notZeroAddress(_to) {
+        require(
+            _from == kittyToOwner[_tokenId],
+            "from address not kitty owner"
+        );
+        _transfer(_from, _to, _tokenId);
+    }
+```
+#### f91664 05_09_2020
+
+```solidity
+
+  struct Kitty {
+        uint256 genes;
+        uint64 birthTime;
+  ++    uint64 cooldownEndTime;
+        uint32 mumId;
+        uint32 dadId;
+  ++    uint16 generation;
+  ++    uint16 cooldownIndex;
+    }
+
+
+    function getKitty(uint256 _kittyId)
+        external
+        view
+        returns (
+            uint256 kittyId,
+            uint256 genes,
+            uint64 birthTime,
+        ++    uint64 cooldownEndTime,
+            uint32 mumId,
+            uint32 dadId,
+        ++    uint16 generation,
+        ++    uint16 cooldownIndex
+        )
+
+    {
+        Kitty storage kitty = kitties[_kittyId];
+        return (
+            _kittyId,
+            kitty.genes,
+            kitty.birthTime,
+            kitty.cooldownEndTime,
+            kitty.mumId,
+            kitty.dadId,
+            kitty.generation,
+            kitty.cooldownIndex
+        );
+    }
+
+```
