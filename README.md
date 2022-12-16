@@ -744,9 +744,11 @@ contract TokenInterface {
 #### 4176bb 03_10_2020
 
 ```solidity
+contract SmartToken is ISmartToken, Owned, ERC20Token, TokenHolder { 
 --    uint16 public constant version = 4; 
- 
---    bool public transfersEnabled = true;  
+--    bool public transfersEnabled = true;
+...
+}
 ```
 
 #### 5775c4 20_05_2017
@@ -777,5 +779,8 @@ contract SmartToken is Owned, ERC20Token, SmartTokenInterface {
 #### efdf6e 20_02_2021
 
 ```solidity
- ++ uint8 private immutable tokenDecimals;
+contract DSToken is IDSToken, ERC20, Owned, Utils {
+    ++ uint8 private immutable tokenDecimals;
+...
+}    
 ```
