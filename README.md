@@ -566,3 +566,176 @@ Obs: Alteração do nome da função.
 ```solidity
     ++ function setOwner(address _owner) ifOwner returns (bool success) {}
 ```
+
+### DigixDao
+
+
+
+#### 0a9709 29_03_2016
+
+
+```solidity
+contract TokenInterface {
+    ...
+
+    ++  address dao;
+    ++  bool locked;
+
+    ...
+}
+
+contract Token is TokenInterface {
+    ...
+
+   ++ function registerDao(address _dao) ifOwner returns (bool success) {
+        if (locked == true) return false;
+        dao = _dao;
+        locked = true;
+        return true;
+  }
+
+  ++ function registerSeller(address _tokensales) ifDao returns (bool success) {
+        seller[_tokensales] = true;
+  }
+
+    ...
+}     
+```
+
+
+
+#### 83ad3e 17_04_2016
+
+```solidity
+contract Token is TokenInterface {
+    ...
+    ++ function unregisterSeller(address _tokensales) ifDao returns (bool success) {
+        seller[_tokensales] = false;
+        return true;
+    }
+    ...
+} 
+```
+
+#### 0390d2 21_04_2016
+
+```solidity
+
+contract Token is TokenInterface {
+    ...
+    ++ function isSeller(address _query) returns (bool isseller) {
+        return seller[_query];
+    } 
+    ...
+}    
+```
+
+#### 0550e8 24_03_2016
+
+```solidity
+contract TokenInterface {
+    ...
+    ++ uint256 public totalBadges;
+    ...
+}
+
+contract Token is TokenInterface {
+...
+
+++ function badgesOf(address _owner) constant returns (uint256 badge) {
+    return users[_owner].badges;
+}
+
+++ function sendBadge(address _to, uint256 _value) returns (bool success) {
+    if (users[msg.sender].badges >= _value && _value > 0) {
+      users[msg.sender].badges -= _value;
+      users[_to].badges += _value;
+      Transfer(msg.sender, _to, _value);
+      success = true;
+    } else {
+      success = false;
+    }
+    return success;
+}
+
+++ function mintBadge(address _owner, uint256 _amount) ifSales returns (bool success) {
+    totalBadges += _amount;
+    users[_owner].badges += _amount;
+    return success;
+  }
+...
+}    
+```
+
+#### 5571f9 07_03_2016
+
+```solidity
+
+contract Token is TokenInterface {
+    ...
+ ++   function mint(address _owner, uint256 _amount) returns (bool success) {
+        success = true;
+        return success;
+    }
+
+++  function Token(address _initseller) {
+    seller[_initseller] = true; 
+  }
+...
+}    
+```
+
+#### e320a2 17_04_2016
+
+```solidity
+
+contract Token {
+  ...
+++ function setOwner(address _newowner) ifDao returns (bool success) {
+    if(Badge(badgeLedger).setOwner(_newowner)) {
+      owner = _newowner;
+      success = true;
+    } else {
+      success = false;
+    }
+    return success;
+  }
+
+++  function setDao(address _newdao) ifDao returns (bool success) {
+    dao = _newdao;
+  }
+...
+}   
+   
+```
+
+#### 6c717c 05_04_2016
+
+
+```solidity
+
+
+contract TokenInterface {
+
+--  struct User {
+    bool locked;
+    uint256 balance;
+    uint256 badges;
+    mapping (address => uint256) allowed;
+  }
+
+--  mapping (address => User) users;
+  mapping (address => uint256) balances;
+  mapping (address => mapping (address => uint256)) allowed;
+  mapping (address => bool) seller;
+
+  address config;
+  address owner;
+  address dao;
+  bool locked;
+
+...
+}
+   
+```
+
