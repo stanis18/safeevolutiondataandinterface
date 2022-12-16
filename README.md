@@ -736,6 +736,46 @@ contract TokenInterface {
 
 ...
 }
-   
 ```
 
+
+### Bancor
+
+#### 4176bb 03_10_2020
+
+```solidity
+--    uint16 public constant version = 4; 
+ 
+--    bool public transfersEnabled = true;  
+```
+
+#### 5775c4 20_05_2017
+
+```solidity
+contract SmartToken is ERC20Token, Owned, ISmartToken {
+    string public version = '0.1';
+    bool public transfersEnabled = true;
+--  address public changer = 0x0; 
+++  ITokenChanger public changer;  
+...
+}
+```
+
+#### a7df76 05_05_2017
+
+```solidity
+contract SmartToken is Owned, ERC20Token, SmartTokenInterface { 
+    string public version = '0.1'; 
+    uint8 public numDecimalUnits = 0;   
+ --   address public events = 0x0;         
+    address public changer = 0x0;      
+    bool public transfersEnabled = true; 
+...
+}
+```
+
+#### efdf6e 20_02_2021
+
+```solidity
+ ++ uint8 private immutable tokenDecimals;
+```
