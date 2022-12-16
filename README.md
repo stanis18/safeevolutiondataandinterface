@@ -1,8 +1,6 @@
 **ERC721**
 
-## ERC721A
-
-
+### ERC721A
 
 #### fb2262 12_02_2022
 
@@ -158,7 +156,7 @@
     }
 ```
 
-## OpenZeppelin ERC721
+### OpenZeppelin ERC721
 
 #### b7d60f 17_01_2019
 
