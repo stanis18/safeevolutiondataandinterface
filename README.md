@@ -5,6 +5,7 @@
 #### fb2262 12_02_2022
 
 ```solidity
+contract ERC721A is Context, ERC165, IERC721, IERC721Metadata {
     struct TokenOwnership {
         address addr;
         uint64 startTimestamp;
@@ -17,25 +18,15 @@
     ++  uint64 numberBurned;
     }
 
-    uint128 internal _currentIndex;
-    uint128 internal _burnCounter;
-    string private _name;
-    string private _symbol;
-
-    mapping(uint256 => TokenOwnership) internal _ownerships;
-    mapping(address => AddressData) private _addressData;
-    mapping(uint256 => address) private _tokenApprovals;
-    mapping(address => mapping(address => bool)) private _operatorApprovals;
+    ++ uint128 internal _burnCounter;
+...
+}
 ```
 
 #### ddd119 18_02_2022
 
 ```solidity
-    struct TokenOwnership {
-        address addr;
-        uint64 startTimestamp;
-        bool burned;
-    }
+contract ERC721A is Context, ERC165, IERC721, IERC721Metadata {
 
     struct AddressData {
         uint64 balance;
@@ -43,40 +34,32 @@
         uint64 numberBurned;
     ++  uint64 aux;
     }
-
-    uint256 internal _currentIndex;
-    uint256 internal _burnCounter;
-    string private _name;
-    string private _symbol;
-
-    mapping(uint256 => TokenOwnership) internal _ownerships;
-    mapping(address => AddressData) private _addressData;
-    mapping(uint256 => address) private _tokenApprovals;
-    mapping(address => mapping(address => bool)) private _operatorApprovals;
+...
+} 
 ```
-
-
 
 #### 3783cc 16_05_2022
 
 ```solidity
-    uint256 private constant BITMASK_ADDRESS_DATA_ENTRY = (1 << 64) - 1;
-    uint256 private constant BITPOS_NUMBER_MINTED = 64;
-    uint256 private constant BITPOS_NUMBER_BURNED = 128;
-    uint256 private constant BITPOS_AUX = 192;
-    uint256 private constant BITMASK_AUX_COMPLEMENT = (1 << 192) - 1;
-    uint256 private constant BITPOS_START_TIMESTAMP = 160;
-    uint256 private constant BITMASK_BURNED = 1 << 224;
-    uint256 private constant BITPOS_NEXT_INITIALIZED = 225;
-    uint256 private constant BITMASK_NEXT_INITIALIZED = 1 << 225;
-    uint256 internal _currentIndex;
-    uint256 internal _burnCounter;
 
-    string private _name;
-    string private _symbol;
+contract ERC721A is IERC721A {
+   
+    ++ uint256 private constant BITMASK_ADDRESS_DATA_ENTRY = (1 << 64) - 1;
+    ++ uint256 private constant BITPOS_NUMBER_MINTED = 64;
+    ++ uint256 private constant BITPOS_NUMBER_BURNED = 128;
+    ++ uint256 private constant BITPOS_AUX = 192;
+    ++ uint256 private constant BITMASK_AUX_COMPLEMENT = (1 << 192) - 1;
+    ++ uint256 private constant BITPOS_START_TIMESTAMP = 160;
+    ++ uint256 private constant BITMASK_BURNED = 1 << 224;
+    ++ uint256 private constant BITPOS_NEXT_INITIALIZED = 225;
+    ++ uint256 private constant BITMASK_NEXT_INITIALIZED = 1 << 225;
+
+    -- mapping(uint256 => TokenOwnership) internal _ownerships;
+    -- mapping(address => AddressData) private _addressData;
+
   
-    mapping(uint256 => uint256) private _packedOwnerships;
-    mapping(address => uint256) private _packedAddressData;
+    ++ mapping(uint256 => uint256) private _packedOwnerships;
+    ++ mapping(address => uint256) private _packedAddressData;
     mapping(uint256 => address) private _tokenApprovals;
     mapping(address => mapping(address => bool)) private _operatorApprovals;
 
@@ -97,40 +80,24 @@
     function _exists(uint256 tokenId) internal view returns (bool) {
         return _startTokenId() <= tokenId &&  tokenId < _currentIndex &&  _packedOwnerships[tokenId] & BITMASK_BURNED == 0; 
     }
+...
+}
 ```
 
 #### 8f4644 11_07_2022
 
 ```solidity
-    struct TokenApprovalRef {
+contract ERC721A is IERC721A {
+   
+    ++ struct TokenApprovalRef {
         address value;
     }
 
-    uint256 private constant BITMASK_ADDRESS_DATA_ENTRY = (1 << 64) - 1;
-    uint256 private constant BITPOS_NUMBER_MINTED = 64;
-    uint256 private constant BITPOS_NUMBER_BURNED = 128;
-    uint256 private constant BITPOS_AUX = 192;
-    uint256 private constant BITMASK_AUX_COMPLEMENT = (1 << 192) - 1;
-    uint256 private constant BITPOS_START_TIMESTAMP = 160;
-    uint256 private constant BITMASK_BURNED = 1 << 224;
-    uint256 private constant BITPOS_NEXT_INITIALIZED = 225;
-    uint256 private constant BITMASK_NEXT_INITIALIZED = 1 << 225;
-    uint256 private constant BITPOS_EXTRA_DATA = 232;
-    uint256 private constant BITMASK_EXTRA_DATA_COMPLEMENT = (1 << 232) - 1;
-    uint256 private constant BITMASK_ADDRESS = (1 << 160) - 1;
-    uint256 private constant MAX_MINT_ERC2309_QUANTITY_LIMIT = 5000;
-    uint256 private _currentIndex;
-    uint256 private _burnCounter;
-    
-    string private _name;
-    string private _symbol;
-   
-    mapping(uint256 => uint256) private _packedOwnerships;
-    mapping(address => uint256) private _packedAddressData;
-    mapping(uint256 => TokenApprovalRef) private _tokenApprovals;
-    mapping(address => mapping(address => bool)) private _operatorApprovals;
+   ++ mapping(uint256 => TokenApprovalRef) private _tokenApprovals;
+   -- mapping(uint256 => address) private _tokenApprovals;
 
-    
+    // Example.. 
+
     function approve(address to, uint256 tokenId) public virtual override {
         address owner = ownerOf(tokenId);
 
@@ -141,7 +108,6 @@
         _tokenApprovals[tokenId] = to;
         emit Approval(owner, to, tokenId);
     }
-
 
     function approve(address to, uint256 tokenId) public virtual override {
         address owner = ownerOf(tokenId);
@@ -154,7 +120,86 @@
         _tokenApprovals[tokenId].value = to;
         emit Approval(owner, to, tokenId);
     }
+...
+}
 ```
+
+#### 3e1b7d 28_01_2022
+
+```solidity
+
+contract ERC721A is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumerable {    
+    
+    --  uint256 internal immutable maxBatchSize;
+
+    constructor(  string memory name_, string memory symbol_,  --  uint256 maxBatchSize_ ) {
+        require(maxBatchSize_ > 0, 'ERC721A: max batch size must be nonzero');
+        _name = name_;
+        _symbol = symbol_;
+      --  maxBatchSize = maxBatchSize_;
+    }
+...
+}
+```
+#### 7b3038 08_02_2022
+
+```solidity
+```
+#### 7eae30 14_06_2022
+
+```solidity
+contract ERC721A is IERC721A {
+    ++ uint256 private constant BITMASK_EXTRA_DATA_COMPLEMENT = (1 << 232) - 1;
+...
+}    
+```
+#### 7fd5b8 15_08_2022
+
+```solidity
+    Obs: Não houve alterações na interface ou modelo de dados.. Mas é um commit interessante a ser analisado.
+```
+#### 9c15e6 11_01_2022
+
+```solidity
+contract ERC721A is Context, ERC165, IERC721,  IERC721Metadata, IERC721Enumerable {
+
+  -- uint256 internal immutable collectionSize;
+
+   constructor( string memory name_, string memory symbol_, uint256 maxBatchSize_, -- uint256 collectionSize_ ) {
+    
+    require(  collectionSize_ > 0, "ERC721A: collection must have a nonzero supply" );
+    require(maxBatchSize_ > 0, "ERC721A: max batch size must be nonzero");
+    _name = name_;
+    _symbol = symbol_;
+    maxBatchSize = maxBatchSize_;
+    -- collectionSize = collectionSize_;
+  }
+...
+} 
+```
+#### c7248c 13_06_2022
+
+```solidity
+contract ERC721A is IERC721A {
+
+  ++  uint256 private constant BITPOS_EXTRA_DATA = 232;
+  ++  uint256 private constant BITMASK_ADDRESS = (1 << 160) - 1;
+...
+} 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### OpenZeppelin ERC721
 
