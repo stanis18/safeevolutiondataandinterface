@@ -194,13 +194,6 @@ contract ERC721A is IERC721A {
 
 
 
-
-
-
-
-
-
-
 ### OpenZeppelin ERC721
 
 #### b7d60f 17_01_2019
@@ -372,178 +365,220 @@ contract ERC721A is IERC721A {
 
 **ERC20**
 
-## OpenZeppelin ERC20
+### OpenZeppelin ERC20
 
-#### 5b5d91 02_04_2020
-
-```solidity
-    mapping (address => uint256) private _balances;
-    mapping (address => mapping (address => uint256)) private _allowances;
-    uint256 private _totalSupply;
-
-```
 
 #### 0408e51 02_04_2020
 
 ```solidity
-    mapping (address => uint256) private _balances;
-    mapping (address => mapping (address => uint256)) private _allowances;
-    uint256 private _totalSupply;
+contract ERC20 is Context, IERC20 {
+   
  ++ string private _name;
  ++ string private _symbol;
  ++ uint8 private _decimals;
-
+...
+}
 ```
 
 #### b8403b 04_02_2021
 
 ```solidity
-    mapping (address => uint256) private _balances;
-    mapping (address => mapping (address => uint256)) private _allowances;
-    uint256 private _totalSupply;
-    string private _name;
-    string private _symbol;
+contract ERC20 is Context, IERC20 {
+    
  -- uint8 private _decimals;
+...
+} 
 ```
 
 ## OpenZeppelin ERC20Votes
 
-
-#### ad3c18 26_05_2021
-
-```solidity
-   bytes32 private constant _DELEGATION_TYPEHASH = keccak256("Delegation(address delegatee,uint256 nonce,uint256 expiry)");
-   mapping (address => address) private _delegates;
-   mapping (address => Checkpoint[]) private _checkpoints;
-```
-
 #### f6efd8 27_05_2021
 
 ```solidity
-    bytes32 private constant _DELEGATION_TYPEHASH = keccak256("Delegation(address delegatee,uint256 nonce,uint256 expiry)");
-    mapping (address => address) private _delegates;
-    mapping (address => Checkpoint[]) private _checkpoints;
- ++ Checkpoint[] private _totalSupplyCheckpoints;
+ contract ERC20Votes is IERC20Votes, ERC20Permit {
+    
+    ++ Checkpoint[] private _totalSupplyCheckpoints;
+
+    ++ function getPriorTotalSupply(uint256 blockNumber) external view override returns(uint256) {
+        require(blockNumber < block.number, "ERC20Votes::getPriorTotalSupply: not yet determined");
+        return _checkpointsLookup(_totalSupplyCheckpoints, blockNumber);
+    }
+...
+} 
 ```
 
 #### e3661a 04_06_2021
 
 ```solidity
- ++ struct Checkpoint { uint32  fromBlock; uint224 votes; } (Obs. moved!)
-    bytes32 private constant _DELEGATION_TYPEHASH = keccak256("Delegation(address delegatee,uint256 nonce,uint256 expiry)");
-    mapping (address => address) private _delegates;
-    mapping (address => Checkpoint[]) private _checkpoints;
-    Checkpoint[] private _totalSupplyCheckpoints;
+contract ERC20Votes is ERC20Permit {
+ ++   struct Checkpoint {
+        uint32  fromBlock;
+        uint224 votes;
+    }
+
+Obs: O código foi movido do contrato pai para esse contrato.
+...
+}
 ```
 
 
-## Uniswap ERC20
-
-#### 4e4546 12_12_2019
-
-```solidity
-    string public name;
-    string public symbol;
-    uint8 public decimals;
-    uint  public totalSupply;
-    mapping (address => uint) public balanceOf;
-    mapping (address => mapping (address => uint)) public allowance;
-	bytes32 public DOMAIN_SEPARATOR;
-	bytes32 public constant APPROVE_TYPEHASH = 0x25a0822e8c2ed7ff64a57c55df37ff176282195b9e0c9bb770ed24a300c89762;
-    mapping (address => uint) public nonces;
-```
+## Uniswap ERC20 V2
 
 #### 5b15d5 13_12_2019
 
 ```solidity
-    string public name;
-    string public symbol;
-    uint8 public decimals;
-    uint  public totalSupply;
-    mapping (address => uint) public balanceOf;
-    mapping (address => mapping (address => uint)) public allowance;
-	bytes32 public DOMAIN_SEPARATOR;
- ++ bytes32 public constant PERMIT_TYPEHASH =       0xf0a99559fef847d211c4182aa5791e1529af3ce414597e8210f570d662791c01;
+contract ERC20 is IERC20 {
+   
+ ++ bytes32 public constant PERMIT_TYPEHASH =      0xf0a99559fef847d211c4182aa5791e1529af3ce414597e8210f570d662791c01;
  -- bytes32 public constant APPROVE_TYPEHASH = 0x25a0822e8c2ed7ff64a57c55df37ff176282195b9e0c9bb770ed24a300c89762;
-    mapping (address => uint) public nonces;
-
+...
+}
 ```
 
 #### 55ae25 07_02_2020
 
 ```solidity
- +- string public constant name = 'Uniswap V2';
- +- string public constant symbol = 'UNI-V2';
- +- uint8 public constant decimals = 18;
-    uint  public totalSupply;
-    mapping(address => uint) public balanceOf;
-    mapping(address => mapping(address => uint)) public allowance;
-    bytes32 public DOMAIN_SEPARATOR;
- +- bytes32 public constant PERMIT_TYPEHASH = 0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9;
-    mapping(address => uint) public nonces;
+contract UniswapV2ERC20 is IUniswapV2ERC20 {
+ 
+-- uint public constant MINIMUM_TOTAL_SUPPLY = 10**4;
+...
+}
 ```
 
 #### 986d24 03_02_2020
 
 ```solidity
-    string public constant name = 'Uniswap V2';
-    string public constant symbol = 'UNI-V2';
-    uint8 public constant decimals = 18;
-    uint  public totalSupply;
-    mapping(address => uint) public balanceOf;
-    mapping(address => mapping(address => uint)) public allowance;
- ++ uint public constant MINIMUM_TOTAL_SUPPLY = 10**4;
-    bytes32 public DOMAIN_SEPARATOR;
-    bytes32 public constant PERMIT_TYPEHASH = 0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9;
-    mapping(address => uint) public nonces;
+contract UniswapV2ERC20 is IUniswapV2ERC20 {
+    -- uint public constant MINIMUM_TOTAL_SUPPLY = 10**6; 
+    ++ uint public constant MINIMUM_TOTAL_SUPPLY = 10**4;
+...
+}
 ```
 
 #### e382d7 31_01_2020
 
 ```solidity
-    string public constant name = 'Uniswap V2';
-    string public constant symbol = 'UNI-V2';
-    uint8 public constant decimals = 18;
-    uint  public totalSupply;
-    mapping(address => uint) public balanceOf;
-    mapping(address => mapping(address => uint)) public allowance;
+contract UniswapV2ERC20 is IUniswapV2ERC20 {
  ++ uint public constant THRESHOLD = 10**6;
- -- uint public constant MINIMUM_TOTAL_SUPPLY = 10**4;
-    bytes32 public DOMAIN_SEPARATOR;
-    bytes32 public constant PERMIT_TYPEHASH = 0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9;
-    mapping(address => uint) public nonces;
-
+...
+}
 ```
 
-## OpenZeppelin ERC1155
-
-
-#### 91516b_02_06_2020
+#### 7417b2 28_10_2019
 
 ```solidity
-    mapping (uint256 => mapping(address => uint256)) private _balances;
-    mapping (address => mapping(address => bool)) private _operatorApprovals;
-    bytes4 private constant _INTERFACE_ID_ERC1155 = 0xd9b67a26;
+contract ERC20 is IERC20 {
+
+++  mapping (address => uint) public nonceFor;
+++	bytes32 public DOMAIN_SEPARATOR;
+++  bytes32 public APPROVE_TYPEHASH = keccak256(
+		"Approve(address owner,address spender,uint256 value,uint256 nonce,uint256 expiration)" );
+
+++ function initialize(uint256 chainId) internal {
+		require(DOMAIN_SEPARATOR == bytes32(0), "ERC20: ALREADY_INITIALIZED");
+		DOMAIN_SEPARATOR = keccak256(abi.encode(
+            keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
+            keccak256(bytes(name)),
+            keccak256(bytes("1")),
+            chainId,
+            address(this)
+        ));
+	}
+
+++ function approveMeta( address owner, address spender, uint256 value, uint256 nonce,
+		uint256 expiration, uint8 v, bytes32 r, bytes32 s) external {
+		require(DOMAIN_SEPARATOR != bytes32(0), "ERC20: UNINITIALIZED");
+        require(nonce == nonceFor[owner]++, "ERC20: INVALID_NONCE");
+		require(expiration > block.timestamp, "ERC20: EXPIRED_SIGNATURE");
+
+        bytes32 digest = keccak256(abi.encodePacked(
+			byte(0x19),
+			byte(0x01),
+			DOMAIN_SEPARATOR,
+			keccak256(abi.encode(
+				APPROVE_TYPEHASH, owner, spender, value, nonce, expiration
+			))
+        ));
+        require(owner == ecrecover(digest, v, r, s), "ERC20: INVALID_SIGNATURE"); // TODO add ECDSA checks? https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/cryptography/ECDSA.sol
+
+		_approve(msg.sender, spender, value);
+	}
+...
+}
 ```
+
+#### e5b8db 25_10_2019
+
+```solidity
+contract ERC20 is IERC20 {
+++ function mint(address to, uint256 value) internal {
+		totalSupply = totalSupply.add(value);
+		balanceOf[to] = balanceOf[to].add(value);
+		emit Transfer(address(0), to, value);
+	}
+...
+}
+```
+
+
+### Tokens
+
+#### 5caa1d 22_09_2017
+
+```solidity
+contract StandardToken is Token {
+    ++  uint256 constant MAX_UINT256 = 2**256 - 1;
+...
+}
+```
+
+#### 5bddc4 04_07_2016
+
+```solidity
+contract StandardToken is Token {
+    --  uint256 public totalSupply;
+...
+} 
+
+Obs: A variável foi movida para a classe pai.
+```
+
+
+### OpenZeppelin ERC1155
 
 #### a81e94_03_06_2020
 
 ```solidity
-    mapping (uint256 => mapping(address => uint256)) private _balances;
-    mapping (address => mapping(address => bool)) private _operatorApprovals;
-    string private _uri;
- ++ bytes4 private constant _INTERFACE_ID_ERC1155 = 0xd9b67a26;
- ++ bytes4 private constant _INTERFACE_ID_ERC1155_METADATA_URI = 0x0e89341c;
+contract ERC1155 is ERC165, IERC1155, IERC1155MetadataURI {
+    
+    ++  string private _uri;
+    ++  bytes4 private constant _INTERFACE_ID_ERC1155_METADATA_URI = 0x0e89341c;
+
+     function uri(uint256) external view override returns (string memory) {
+        return _uri;
+    }
+
+    -- constructor() public {
+        _registerInterface(_INTERFACE_ID_ERC1155);
+    }
+
+    ++ constructor (string memory uri) public {
+        _setURI(uri);
+        _registerInterface(_INTERFACE_ID_ERC1155);
+        _registerInterface(_INTERFACE_ID_ERC1155_METADATA_URI);
+    }
+
 ```
 
 #### 602059 29_01_2021
 
 ```solidity
-    mapping (uint256 => mapping(address => uint256)) private _balances;
-    mapping (address => mapping(address => bool)) private _operatorApprovals;
-    string private _uri;
+contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
+
  -- bytes4 private constant _INTERFACE_ID_ERC1155 = 0xd9b67a26;
  -- bytes4 private constant _INTERFACE_ID_ERC1155_METADATA_URI = 0x0e89341c;
+...
+}  
 ```
 
 
