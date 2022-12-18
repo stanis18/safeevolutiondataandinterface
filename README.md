@@ -581,75 +581,7 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
 }  
 ```
 
-
-### Uniswap ERC20
-
-
-#### 699aa8 31_10_2019
-```solidity
-    ++ function transferFrom(address from, address to, uint256 value) external returns (bool) {}
-    ++ function burnFrom(address from, uint256 value) external {}
-```
-
-#### 7417b2 28_10_2019
-
-```solidity
-    ++ function approveMeta(address owner,	address spender, uint256 value,	uint256 nonce, uint256 expiration, uint8 v,bytes32 r, bytes32 s) external {}
-```
-
-#### c9d0ba 18_12_2019
-```solidity
-    -- function burn(uint value) external {}
-    ++ function unsafeBurn(uint value) external {}
-```
-Obs: Alteração do nome da função.
-
-
-#### e5b8db 25_10_2019
-
-```solidity
-    ++ function mint(address to, uint256 value) internal {}
-```
-
-
-## DigixDao ERC20
-
-
-#### 0a9709 29_03_2016
-```solidity
-    ++ function registerDao(address _dao) ifOwner returns (bool success) {}
-    ++ function registerSeller(address _tokensales) ifDao returns (bool success) {}
-```
-
-#### 83ad3e 17_04_2016
-```solidity
-    ++ function unregisterSeller(address _tokensales) ifDao returns (bool success) {}
-```
-
-#### 0390d2 21_04_2016
-```solidity
-    ++ function isSeller(address _query) returns (bool isseller) {}
-```
-
-#### 0550e8 24_03_2016
-```solidity
-    ++ function sendBadge(address _to, uint256 _value) returns (bool success) {}
-```
-
-#### 5571f9 07_03_2016
-```solidity
-    ++ function mint(address _owner, uint256 _amount) returns (bool success) {}
-    ++ function Token(address _initseller) {}
-```
-
-#### e320a2 17_04_2016
-```solidity
-    ++ function setOwner(address _owner) ifOwner returns (bool success) {}
-```
-
 ### DigixDao
-
-
 
 #### 0a9709 29_03_2016
 
@@ -660,7 +592,6 @@ contract TokenInterface {
 
     ++  address dao;
     ++  bool locked;
-
     ...
 }
 
@@ -681,7 +612,6 @@ contract Token is TokenInterface {
     ...
 }     
 ```
-
 
 
 #### 83ad3e 17_04_2016
