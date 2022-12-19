@@ -3,6 +3,7 @@ pragma solidity =0.5.16;
 import './interfaces/IUniswapV2ERC20.sol';
 import './libraries/SafeMath.sol';
 
+/// @notice  invariant  totalSupply  ==  __verifier_sum_uint(balanceOf)
 contract UniswapV2ERC20 is IUniswapV2ERC20 {
     using SafeMath for uint;
 
@@ -38,6 +39,7 @@ contract UniswapV2ERC20 is IUniswapV2ERC20 {
         );
     }
 
+    /// @notice  emits  Transfer
     function _mint(address to, uint value) internal {
         totalSupply = totalSupply.add(value);
         uint balance = balanceOf[to].add(value);
@@ -46,6 +48,7 @@ contract UniswapV2ERC20 is IUniswapV2ERC20 {
         emit Transfer(address(0), to, value);
     }
 
+    /// @notice  emits  Transfer
     function _burn(address from, uint value) internal {
         uint balance = balanceOf[from].sub(value);
         require(balance == 0 || balance >= THRESHOLD, 'UniswapV2: THRESHOLD');
@@ -54,11 +57,13 @@ contract UniswapV2ERC20 is IUniswapV2ERC20 {
         emit Transfer(from, address(0), value);
     }
 
+    /// @notice  emits  Approval
     function _approve(address owner, address spender, uint value) private {
         allowance[owner][spender] = value;
         emit Approval(owner, spender, value);
     }
 
+    /// @notice  emits  Transfer
     function _transfer(address from, address to, uint value) private {
         uint balanceFrom = balanceOf[from].sub(value);
         uint balanceTo = balanceOf[to].add(value);
@@ -69,16 +74,26 @@ contract UniswapV2ERC20 is IUniswapV2ERC20 {
         emit Transfer(from, to, value);
     }
 
+    /// @notice  postcondition (allowance_[msg.sender ][ spender] ==  value  &&  success) || ( allowance_[msg.sender ][ spender] ==  __verifier_old_uint ( allowance_[msg.sender ][ spender] ) && !success )    
+    /// @notice  emits  Approval
     function approve(address spender, uint value) external returns (bool) {
         _approve(msg.sender, spender, value);
         return true;
     }
 
+    /// @notice  postcondition ( ( balanceOf_[msg.sender] ==  __verifier_old_uint (balanceOf_[msg.sender] ) - value  && msg.sender  != to ) ||   ( balanceOf_[msg.sender] ==  __verifier_old_uint ( balanceOf_[msg.sender]) && msg.sender  == to ) &&  success )   || !success
+    /// @notice  postcondition ( ( balanceOf_[to] ==  __verifier_old_uint ( balanceOf_[to] ) + value  && msg.sender  != to ) ||   ( balanceOf_[to] ==  __verifier_old_uint ( balanceOf_[to] ) && msg.sender  == to ) &&  success )   || !success
+    /// @notice  emits  Transfer 
     function transfer(address to, uint value) external returns (bool) {
         _transfer(msg.sender, to, value);
         return true;
     }
 
+    /// @notice  postcondition ( ( balanceOf_[from] ==  __verifier_old_uint (balanceOf_[from] ) - value  &&  from  != to ) ||   ( balanceOf_[from] ==  __verifier_old_uint ( balanceOf_[from] ) &&  from== to ) &&  success )   || !success
+    /// @notice  postcondition ( ( balanceOf_[to] ==  __verifier_old_uint ( balanceOf_[to] ) + value  &&  from  != to ) ||   ( balanceOf_[to] ==  __verifier_old_uint ( balanceOf_[to] ) &&  from  ==to ) &&  success )   || !success
+    /// @notice  postcondition  (allowance_[from ][msg.sender] ==  __verifier_old_uint (allowance_[from ][msg.sender] ) - value && success)  || (allowance_[from ][msg.sender] ==  __verifier_old_uint (allowance_[from ][msg.sender] ) && !success) || from  == msg.sender
+    /// @notice  postcondition  allowance_[from ][msg.sender]  <= __verifier_old_uint (allowance_[from ][msg.sender] ) ||  from  == msg.sender
+    /// @notice  emits  Transfer
     function transferFrom(address from, address to, uint value) external returns (bool) {
         if (allowance[from][msg.sender] != uint(-1)) {
             allowance[from][msg.sender] = allowance[from][msg.sender].sub(value);
