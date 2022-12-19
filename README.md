@@ -189,50 +189,15 @@ contract ERC721A is IERC721A {
 ```
 
 
-
-
-
-
-
 ### OpenZeppelin ERC721
-
-#### b7d60f 17_01_2019
-
-```solidity
-    bytes4 private constant _ERC721_RECEIVED = 0x150b7a02;
-
-    mapping (uint256 => address) private _tokenOwner;
-
-    mapping (uint256 => address) private _tokenApprovals;
-
-    mapping (address => uint256) private _ownedTokensCount;
-
-    mapping (address => mapping (address => bool)) private _operatorApprovals;
-
-    bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
-
-    // Example... 
-     function transferFrom(address from, address to, uint256 tokenId) public {
-        require(_isApprovedOrOwner(msg.sender, tokenId));
-        _transferFrom(from, to, tokenId);
-    }
-    function _transferFrom(address from, address to, uint256 tokenId) internal {
-        require(ownerOf(tokenId) == from);
-        require(to != address(0));
-        _clearApproval(tokenId);
-        _ownedTokensCount[from] = _ownedTokensCount[from].sub(1);
-        _ownedTokensCount[to] = _ownedTokensCount[to].add(1);
-        _tokenOwner[tokenId] = to;
-        emit Transfer(from, to, tokenId);
-    }
-```
-
 
 
 #### 07603d 21_01_2019
 
 ```solidity
-    library Counters {
+contract ERC721 is ERC165, IERC721 {
+
+  ++  library Counters {
         using SafeMath for uint256;
 
         struct Counter {
@@ -240,14 +205,9 @@ contract ERC721A is IERC721A {
         }
     }
     
-    bytes4 private constant _ERC721_RECEIVED = 0x150b7a02;
+    -- mapping (address => uint256) private _ownedTokensCount;
 
-    mapping (uint256 => address) private _tokenOwner;
-    mapping (uint256 => address) private _tokenApprovals;
-
-    mapping (address => Counters.Counter) private _ownedTokensCount;
-    mapping (address => mapping (address => bool)) private _operatorApprovals;
-    bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
+    ++ mapping (address => Counters.Counter) private _ownedTokensCount;
 
     // Example... 
 
@@ -264,37 +224,24 @@ contract ERC721A is IERC721A {
         _tokenOwner[tokenId] = to;
         emit Transfer(from, to, tokenId);
     }
+...
+}
 ```
 
 #### bd0778 02_04_2020
 
 ```solidity
-    mapping (address => EnumerableSet.UintSet) private _holderTokens;
-
-    EnumerableMap.UintToAddressMap private _tokenOwners;
-
-    mapping (uint256 => address) private _tokenApprovals;
-    mapping (address => mapping (address => bool)) private _operatorApprovals;
-    mapping(uint256 => string) private _tokenURIs;
-
-    string private _name;
-    string private _symbol;
-    string private _baseURI;
-
-    bytes4 private constant _ERC721_RECEIVED = 0x150b7a02;
-    bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
-    bytes4 private constant _INTERFACE_ID_ERC721_METADATA = 0x5b5e139f;
-    bytes4 private constant _INTERFACE_ID_ERC721_ENUMERABLE = 0x780e9d63;
+contract ERC721 is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumerable {
 
 
-    library EnumerableSet {
+    ++ library EnumerableSet {
         struct Set {
             bytes32[] _values;
             mapping (bytes32 => uint256) _indexes;
         }
     }
 
-    library EnumerableMap {
+    ++ library EnumerableMap {
         struct MapEntry {
             bytes32 _key;
             bytes32 _value;
@@ -304,6 +251,17 @@ contract ERC721A is IERC721A {
             mapping (bytes32 => uint256) _indexes;
         }
     }
+
+    ++ mapping (address => EnumerableSet.UintSet) private _holderTokens;
+    ++ EnumerableMap.UintToAddressMap private _tokenOwners;
+
+    -- mapping (uint256 => address) private _tokenOwner;
+    -- mapping (address => Counters.Counter) private _ownedTokensCount;
+
+    -- mapping(address => uint256[]) private _ownedTokens;
+    -- mapping(uint256 => uint256) private _ownedTokensIndex;
+    -- uint256[] private _allTokens;
+    -- mapping(uint256 => uint256) private _allTokensIndex;
 
     // Example... 
 
@@ -324,23 +282,27 @@ contract ERC721A is IERC721A {
         _tokenOwners.set(tokenId, to);
         emit Transfer(from, to, tokenId);
     }
-
+...
+}
 ```
 
 
-#### 09734e 21_01_2021
+#### 09734e 19_02_2021
 
 ```solidity
-    string private _name;
-    string private _symbol;
+contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
 
-    mapping (uint256 => address) private _owners;
+    -- mapping (address => EnumerableSet.UintSet) private _holderTokens;
 
-    mapping (address => uint256) private _balances;
+    -- EnumerableMap.UintToAddressMap private _tokenOwners;
 
-    mapping (uint256 => address) private _tokenApprovals;
+    -- mapping (uint256 => string) private _tokenURIs;
 
-    mapping (address => mapping (address => bool)) private _operatorApprovals;
+    -- string private _baseURI;
+
+    ++ mapping (uint256 => address) private _owners;
+    ++ mapping (address => uint256) private _balances;
+
 
     // Example... 
 
@@ -360,6 +322,8 @@ contract ERC721A is IERC721A {
         _owners[tokenId] = to;
         emit Transfer(from, to, tokenId);
     }
+...
+}    
 ```
 
 
@@ -913,5 +877,209 @@ function getKitty(uint256 _kittyId)
             kitty.cooldownIndex
         );
     }
+
+```
+### Set-Protocol
+
+#### 23e484 27_04_2018
+
+```solidity
+contract SetToken is StandardToken, DetailedERC20("", "", 18), Set {
+    ++  uint public naturalUnit;
+    
+    constructor(address[] _components, uint[] _units, ++ uint _naturalUnit) public {
+        ...
+        require(_naturalUnit > 0);
+        naturalUnit = _naturalUnit;
+        ...
+    }
+ ...
+}
+
+```
+#### 187f9b 25_02_2018
+
+```solidity
+contract SetToken is StandardToken, DetailedERC20("", "", 18), Set {
+
+  ++ uint256 public totalSupply;
+
+  ++ function tokenCount() public view returns(uint tokensLength) {
+    return tokens.length;
+  }
+...
+}
+```
+#### 5999fc 19_05_2018
+
+```solidity
+contract SetToken is StandardToken, DetailedERC20("", "", 18), SetInterface {
+
+    -- mapping(bytes32 => mapping(address => uint)) internal unredeemedBalances;
+    ++ mapping(uint => mapping(address => uint)) internal unredeemedBalances;
+...
+}    
+```
+#### 573434 31_07_2018
+
+```solidity
+contract SetToken is StandardToken, DetailedERC20 {
+   -- string constant COMPONENTS_INPUT_MISMATCH = "Components and units must be the same length.";
+   --  string constant COMPONENTS_MISSING = "Components must not be empty.";
+   --  string constant INVALID_COMPONENT_UNIT = "Unit declarations must be non-zero.";
+   --  string constant INVALID_COMPONENT_ADDRESS = "Components must have non-zero address.";
+   --  string constant INVALID_NATURAL_UNIT = "Natural unit does not work with component decimals.";
+   --  string constant INVALID_SENDER = "Sender is not permitted to perform this function.";
+   --  string constant UNITS_MISSING = "Units must not be empty.";
+   --  string constant ZERO_QUANTITY = "Quantity must be greater than zero.";
+...
+} 
+```
+#### ae657d 14_06_2018
+
+```solidity
+contract SetToken is StandardToken, DetailedERC20 {
+ ++ string constant INVALID_SENDER = "Sender is not permitted to perform this function.";
+ ++ address public factory;
+...
+}     
+```
+#### b1cc53 08_11_2018
+
+```solidity
+contract SetToken is ERC20, RC20Detailed {
+--    struct Component {
+        address address_;
+        uint256 unit_;
+    }
+
+--    Component[] public components;
+
+ ++   address[] public components;
+ ++   uint256[] public units;
+...
+}    
+```
+
+#### be95aa 09_04_2018
+
+```solidity
+contract SetToken is StandardToken, DetailedERC20("", "", 18), Set {
+
+++  struct PartialRedeemStatus {
+        uint unredeemedBalance;
+        bool isRedeemed;
+  }
+  
+++  mapping(address => mapping(address => PartialRedeemStatus)) public unredeemedComponents;
+
+++ function partialRedeem(uint quantity, address[] excludedComponents) public hasSufficientBalance(quantity)
+    preventRedeemReEntrancy(msg.sender, quantity) returns (bool success) {
+
+    require(excludedComponents.length < components.length);
+
+    for (uint i = 0; i < components.length; i++) {
+      bool isExcluded = false;
+      uint transferValue = units[i].fxpMul(quantity, 10**9);
+      assert(transferValue > 0);
+
+      for (uint j = 0; j < excludedComponents.length; j++) {
+        address currentExcluded = excludedComponents[j];
+        assert(isComponent[currentExcluded]);
+
+        if (components[i] == currentExcluded) {
+          bool currentIsRedeemed = unredeemedComponents[components[i]][msg.sender].isRedeemed;
+          assert(currentIsRedeemed == false);
+          unredeemedComponents[components[i]][msg.sender].unredeemedBalance += transferValue;
+          unredeemedComponents[components[i]][msg.sender].isRedeemed = true;
+          isExcluded = true;
+        }
+      }
+
+      if (isExcluded == false) {
+        assert(ERC20(components[i]).transfer(msg.sender, transferValue));  
+      }
+    }
+
+    for (uint k = 0; k < excludedComponents.length; k++) {
+      address currentExcludedToUnredeem = excludedComponents[k];
+      unredeemedComponents[currentExcludedToUnredeem][msg.sender].isRedeemed = false;
+    }
+
+    LogPartialRedemption(msg.sender, quantity);
+    return true;
+  }
+
+...
+}     
+```
+#### bf85e7 10_08_2018
+
+```solidity
+contract SetToken is StandardToken, DetailedERC20 {
+    -- mapping(bytes32 => bool) internal isComponent;
+    ++ mapping(address => bool) internal isComponent;
+...
+}    
+```
+#### cad51f 13_11_2017
+
+```solidity
+contract SetToken is Set, StandardToken {
+    --  mapping(address => bool) addressExists;
+
+    -- function checkNoDuplicateAddresses(address[] _addresses) internal constant returns (bool noDuplicate) {
+    for (uint i = 0; i < _addresses.length; i++) {
+      address currentAddress = _addresses[i];
+
+      if (addressExists[currentAddress]) {
+        return false;
+      }
+
+      addressExists[currentAddress] = true;
+    }
+
+    return true;
+  }
+...
+}    
+```
+#### e63ae2 11_06_2018
+
+```solidity
+contract SetToken is StandardToken, DetailedERC20("", "", 18) {
+
+++  string constant COMPONENTS_INPUT_MISMATCH = "Components and units must be the same length.";
+++  string constant COMPONENTS_MISSING = "Components must not be empty.";
+++  string constant UNITS_MISSING = "Units must not be empty.";
+++  string constant ZERO_QUANTITY = "Quantity must be greater than zero.";
+
+--   mapping(uint => mapping(address => uint)) internal unredeemedBalances;
+
+++  function burn( uint quantity) external {
+        balances[msg.sender] = balances[msg.sender].sub(quantity);
+        totalSupply_ = totalSupply_.sub(quantity);
+        emit Transfer(msg.sender, address(0), quantity);
+    }
+...
+}     
+```
+#### e85133 26_04_2018
+
+```solidity
+contract SetToken is StandardToken, DetailedERC20("", "", 18), Set {
+ --- address[] public components;
+ -- uint[] public units;
+ -- mapping(address => bool) internal isComponent;
+
+++   struct Component {
+    address address_;
+    uint unit_;
+  }
+
+ ++ Component[] public components;
+++ mapping(address => bool) internal isComponent;
+...
+}  
 
 ```
