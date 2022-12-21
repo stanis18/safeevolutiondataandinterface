@@ -24,7 +24,7 @@ contract ConverterFactory is IConverterFactory, Owned {
 
     mapping (uint16 => ITypedConverterFactory) public converterFactories;
     mapping (uint16 => ITypedConverterAnchorFactory) public anchorFactories;
-    mapping (uint16 => ITypedConverterCustomFactory) public override customFactories;
+    mapping (uint16 => ITypedConverterCustomFactory) public  customFactories;
 
     /**
       * @dev initializes the factory with a specific typed converter factory
@@ -70,7 +70,7 @@ contract ConverterFactory is IConverterFactory, Owned {
     function createAnchor(uint16 _converterType, string memory _name, string memory _symbol, uint8 _decimals)
         public
         virtual
-        override
+        
         returns (IConverterAnchor)
     {
         IConverterAnchor anchor;
@@ -104,7 +104,7 @@ contract ConverterFactory is IConverterFactory, Owned {
     function createConverter(uint16 _type, IConverterAnchor _anchor, IContractRegistry _registry, uint32 _maxConversionFee)
         public
         virtual
-        override
+        
         returns (IConverter)
     {
         IConverter converter = converterFactories[_type].createConverter(_anchor, _registry, _maxConversionFee);

@@ -29,7 +29,7 @@ contract TokenHolder is ITokenHolder, TokenHandler, Owned, Utils {
     function withdrawTokens(IERC20Token _token, address _to, uint256 _amount)
         public
         virtual
-        override
+        
         ownerOnly
         validAddress(address(_token))
         validAddress(_to)

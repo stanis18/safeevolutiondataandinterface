@@ -31,28 +31,28 @@ abstract contract ERC20Votes is IERC20Votes, ERC20Permit {
     /**
      * @dev Get the `pos`-th checkpoint for `account`.
      */
-    function checkpoints(address account, uint32 pos) external view virtual override returns (Checkpoint memory) {
+    function checkpoints(address account, uint32 pos) external view virtual  returns (Checkpoint memory) {
         return _checkpoints[account][pos];
     }
 
     /**
      * @dev Get number of checkpoints for `account`.
      */
-    function numCheckpoints(address account) external view virtual override returns (uint32) {
+    function numCheckpoints(address account) external view virtual  returns (uint32) {
         return SafeCast.toUint32(_checkpoints[account].length);
     }
 
     /**
      * @dev Get the address `account` is currently delegating to.
      */
-    function delegates(address account) public view virtual override returns (address) {
+    function delegates(address account) public view virtual  returns (address) {
         return _delegates[account];
     }
 
     /**
      * @dev Gets the current votes balance for `account`
      */
-    function getCurrentVotes(address account) external view override returns (uint256) {
+    function getCurrentVotes(address account) external view  returns (uint256) {
         uint256 pos = _checkpoints[account].length;
         return pos == 0 ? 0 : _checkpoints[account][pos - 1].votes;
     }
@@ -60,7 +60,7 @@ abstract contract ERC20Votes is IERC20Votes, ERC20Permit {
     /**
      * @dev Determine the number of votes for `account` at the begining of `blockNumber`.
      */
-    function getPriorVotes(address account, uint256 blockNumber) external view override returns (uint256) {
+    function getPriorVotes(address account, uint256 blockNumber) external view  returns (uint256) {
         require(blockNumber < block.number, "ERC20Votes::getPriorVotes: not yet determined");
 
         Checkpoint[] storage ckpts = _checkpoints[account];
@@ -93,7 +93,7 @@ abstract contract ERC20Votes is IERC20Votes, ERC20Permit {
     /**
      * @dev Delegate votes from the sender to `delegatee`.
      */
-    function delegate(address delegatee) public virtual override {
+    function delegate(address delegatee) public virtual  {
         return _delegate(_msgSender(), delegatee);
     }
 
@@ -101,7 +101,7 @@ abstract contract ERC20Votes is IERC20Votes, ERC20Permit {
      * @dev Delegates votes from signer to `delegatee`
      */
     function delegateBySig(address delegatee, uint256 nonce, uint256 expiry, uint8 v, bytes32 r, bytes32 s)
-        public virtual override
+        public virtual 
     {
         require(block.timestamp <= expiry, "ERC20Votes::delegateBySig: signature expired");
         address signer = ECDSA.recover(
@@ -161,12 +161,12 @@ abstract contract ERC20Votes is IERC20Votes, ERC20Permit {
       emit DelegateVotesChanged(delegatee, oldWeight, newWeight);
     }
 
-    function _mint(address account, uint256 amount) internal virtual override {
+    function _mint(address account, uint256 amount) internal virtual  {
         super._mint(account, amount);
         require(totalSupply() <= type(uint224).max, "ERC20Votes: total supply exceeds 2**224");
     }
 
-    function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override {
+    function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual  {
         _moveVotingPower(delegates(from), delegates(to), amount);
     }
 }

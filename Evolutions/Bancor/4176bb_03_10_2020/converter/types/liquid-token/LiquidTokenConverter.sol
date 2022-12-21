@@ -34,7 +34,7 @@ contract LiquidTokenConverter is ConverterBase {
       *
       * @return see the converter types in the the main contract doc
     */
-    function converterType() public pure override returns (uint16) {
+    function converterType() public pure  returns (uint16) {
         return 0;
     }
 
@@ -44,7 +44,7 @@ contract LiquidTokenConverter is ConverterBase {
       * can only be called by the contract owner
       * note that prior to version 28, you should use 'acceptTokenOwnership' instead
     */
-    function acceptAnchorOwnership() public override ownerOnly {
+    function acceptAnchorOwnership() public  ownerOnly {
         super.acceptAnchorOwnership();
 
         emit Activation(converterType(), anchor, true);
@@ -58,7 +58,7 @@ contract LiquidTokenConverter is ConverterBase {
       * @param _token   address of the reserve token
       * @param _weight  reserve weight, represented in ppm, 1-1000000
     */
-    function addReserve(IERC20Token _token, uint32 _weight) public override ownerOnly {
+    function addReserve(IERC20Token _token, uint32 _weight) public  ownerOnly {
         // verify that the converter doesn't have a reserve yet
         require(reserveTokenCount() == 0, "ERR_INVALID_RESERVE_COUNT");
         super.addReserve(_token, _weight);
@@ -75,7 +75,7 @@ contract LiquidTokenConverter is ConverterBase {
       * @return expected target amount
       * @return expected fee
     */
-    function targetAmountAndFee(IERC20Token _sourceToken, IERC20Token _targetToken, uint256 _amount) public view override returns (uint256, uint256) {
+    function targetAmountAndFee(IERC20Token _sourceToken, IERC20Token _targetToken, uint256 _amount) public view  returns (uint256, uint256) {
         if (_targetToken == ISmartToken(address(anchor)) && reserves[_sourceToken].isSet)
             return purchaseTargetAmount(_amount);
         if (_sourceToken == ISmartToken(address(anchor)) && reserves[_targetToken].isSet)
@@ -99,7 +99,7 @@ contract LiquidTokenConverter is ConverterBase {
     */
     function doConvert(IERC20Token _sourceToken, IERC20Token _targetToken, uint256 _amount, address _trader, address payable _beneficiary)
         internal
-        override
+        
         returns (uint256)
     {
         uint256 targetAmount;

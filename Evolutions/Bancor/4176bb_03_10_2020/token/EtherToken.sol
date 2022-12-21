@@ -40,7 +40,7 @@ contract EtherToken is IEtherToken, ERC20Token {
     /**
       * @dev deposit ether on behalf of the sender
     */
-    function deposit() public override payable {
+    function deposit() public  payable {
         depositTo(msg.sender);
     }
 
@@ -49,7 +49,7 @@ contract EtherToken is IEtherToken, ERC20Token {
       *
       * @param _amount  amount of ether to withdraw
     */
-    function withdraw(uint256 _amount) public override {
+    function withdraw(uint256 _amount) public  {
         withdrawTo(msg.sender, _amount);
     }
 
@@ -60,7 +60,7 @@ contract EtherToken is IEtherToken, ERC20Token {
     */
     function depositTo(address _to)
         public
-        override
+        
         payable
         notThis(_to)
     {
@@ -79,7 +79,7 @@ contract EtherToken is IEtherToken, ERC20Token {
     */
     function withdrawTo(address payable _to, uint256 _amount)
         public
-        override
+        
         notThis(_to)
     {
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(_amount); // deduct the amount from the account balance
@@ -90,7 +90,7 @@ contract EtherToken is IEtherToken, ERC20Token {
         emit Destruction(_amount);
     }
 
-    // ERC20 standard method overrides with some extra protection
+    // ERC20 standard method s with some extra protection
 
     /**
       * @dev send coins
@@ -103,7 +103,7 @@ contract EtherToken is IEtherToken, ERC20Token {
     */
     function transfer(address _to, uint256 _value)
         public
-        override(IERC20Token, ERC20Token)
+        (IERC20Token, ERC20Token)
         notThis(_to)
         returns (bool)
     {
@@ -122,7 +122,7 @@ contract EtherToken is IEtherToken, ERC20Token {
     */
     function transferFrom(address _from, address _to, uint256 _value)
         public
-        override(IERC20Token, ERC20Token)
+        (IERC20Token, ERC20Token)
         notThis(_to)
         returns (bool)
     {

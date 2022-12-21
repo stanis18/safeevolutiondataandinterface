@@ -52,7 +52,7 @@ contract ConverterRegistryData is IConverterRegistryData, ContractRegistryClient
       *
       * @param _anchor smart token
     */
-    function addSmartToken(IConverterAnchor _anchor) external override only(CONVERTER_REGISTRY) {
+    function addSmartToken(IConverterAnchor _anchor) external  only(CONVERTER_REGISTRY) {
         addItem(smartTokens, address(_anchor));
     }
 
@@ -61,7 +61,7 @@ contract ConverterRegistryData is IConverterRegistryData, ContractRegistryClient
       *
       * @param _anchor smart token
     */
-    function removeSmartToken(IConverterAnchor _anchor) external override only(CONVERTER_REGISTRY) {
+    function removeSmartToken(IConverterAnchor _anchor) external  only(CONVERTER_REGISTRY) {
         removeItem(smartTokens, address(_anchor));
     }
 
@@ -70,7 +70,7 @@ contract ConverterRegistryData is IConverterRegistryData, ContractRegistryClient
       *
       * @param _liquidityPoolAnchor liquidity pool
     */
-    function addLiquidityPool(IConverterAnchor _liquidityPoolAnchor) external override only(CONVERTER_REGISTRY) {
+    function addLiquidityPool(IConverterAnchor _liquidityPoolAnchor) external  only(CONVERTER_REGISTRY) {
         addItem(liquidityPools, address(_liquidityPoolAnchor));
     }
 
@@ -79,7 +79,7 @@ contract ConverterRegistryData is IConverterRegistryData, ContractRegistryClient
       *
       * @param _liquidityPoolAnchor liquidity pool
     */
-    function removeLiquidityPool(IConverterAnchor _liquidityPoolAnchor) external override only(CONVERTER_REGISTRY) {
+    function removeLiquidityPool(IConverterAnchor _liquidityPoolAnchor) external  only(CONVERTER_REGISTRY) {
         removeItem(liquidityPools, address(_liquidityPoolAnchor));
     }
 
@@ -89,7 +89,7 @@ contract ConverterRegistryData is IConverterRegistryData, ContractRegistryClient
       * @param _convertibleToken    convertible token
       * @param _anchor              associated smart token
     */
-    function addConvertibleToken(IERC20Token _convertibleToken, IConverterAnchor _anchor) external override only(CONVERTER_REGISTRY) {
+    function addConvertibleToken(IERC20Token _convertibleToken, IConverterAnchor _anchor) external  only(CONVERTER_REGISTRY) {
         List storage list = convertibleTokens.table[address(_convertibleToken)];
         if (list.items.array.length == 0) {
             list.index = convertibleTokens.array.length;
@@ -104,7 +104,7 @@ contract ConverterRegistryData is IConverterRegistryData, ContractRegistryClient
       * @param _convertibleToken    convertible token
       * @param _anchor              associated smart token
     */
-    function removeConvertibleToken(IERC20Token _convertibleToken, IConverterAnchor _anchor) external override only(CONVERTER_REGISTRY) {
+    function removeConvertibleToken(IERC20Token _convertibleToken, IConverterAnchor _anchor) external  only(CONVERTER_REGISTRY) {
         List storage list = convertibleTokens.table[address(_convertibleToken)];
         removeItem(list.items, address(_anchor));
         if (list.items.array.length == 0) {
@@ -121,7 +121,7 @@ contract ConverterRegistryData is IConverterRegistryData, ContractRegistryClient
       *
       * @return number of smart tokens
     */
-    function getSmartTokenCount() external view override returns (uint256) {
+    function getSmartTokenCount() external view  returns (uint256) {
         return smartTokens.array.length;
     }
 
@@ -130,7 +130,7 @@ contract ConverterRegistryData is IConverterRegistryData, ContractRegistryClient
       *
       * @return list of smart tokens
     */
-    function getSmartTokens() external view override returns (address[] memory) {
+    function getSmartTokens() external view  returns (address[] memory) {
         return smartTokens.array;
     }
 
@@ -140,7 +140,7 @@ contract ConverterRegistryData is IConverterRegistryData, ContractRegistryClient
       * @param _index index
       * @return smart token at the given index
     */
-    function getSmartToken(uint256 _index) external view override returns (IConverterAnchor) {
+    function getSmartToken(uint256 _index) external view  returns (IConverterAnchor) {
         return IConverterAnchor(smartTokens.array[_index]);
     }
 
@@ -150,7 +150,7 @@ contract ConverterRegistryData is IConverterRegistryData, ContractRegistryClient
       * @param _value value
       * @return true if the given value is a smart token, false if not
     */
-    function isSmartToken(address _value) external view override returns (bool) {
+    function isSmartToken(address _value) external view  returns (bool) {
         return smartTokens.table[_value].valid;
     }
 
@@ -159,7 +159,7 @@ contract ConverterRegistryData is IConverterRegistryData, ContractRegistryClient
       *
       * @return number of liquidity pools
     */
-    function getLiquidityPoolCount() external view override returns (uint256) {
+    function getLiquidityPoolCount() external view  returns (uint256) {
         return liquidityPools.array.length;
     }
 
@@ -168,7 +168,7 @@ contract ConverterRegistryData is IConverterRegistryData, ContractRegistryClient
       *
       * @return list of liquidity pools
     */
-    function getLiquidityPools() external view override returns (address[] memory) {
+    function getLiquidityPools() external view  returns (address[] memory) {
         return liquidityPools.array;
     }
 
@@ -178,7 +178,7 @@ contract ConverterRegistryData is IConverterRegistryData, ContractRegistryClient
       * @param _index index
       * @return liquidity pool at the given index
     */
-    function getLiquidityPool(uint256 _index) external view override returns (IConverterAnchor) {
+    function getLiquidityPool(uint256 _index) external view  returns (IConverterAnchor) {
         return IConverterAnchor(liquidityPools.array[_index]);
     }
 
@@ -188,7 +188,7 @@ contract ConverterRegistryData is IConverterRegistryData, ContractRegistryClient
       * @param _value value
       * @return true if the given value is a liquidity pool, false if not
     */
-    function isLiquidityPool(address _value) external view override returns (bool) {
+    function isLiquidityPool(address _value) external view  returns (bool) {
         return liquidityPools.table[_value].valid;
     }
 
@@ -197,7 +197,7 @@ contract ConverterRegistryData is IConverterRegistryData, ContractRegistryClient
       *
       * @return number of convertible tokens
     */
-    function getConvertibleTokenCount() external view override returns (uint256) {
+    function getConvertibleTokenCount() external view  returns (uint256) {
         return convertibleTokens.array.length;
     }
 
@@ -206,7 +206,7 @@ contract ConverterRegistryData is IConverterRegistryData, ContractRegistryClient
       *
       * @return list of convertible tokens
     */
-    function getConvertibleTokens() external view override returns (address[] memory) {
+    function getConvertibleTokens() external view  returns (address[] memory) {
         return convertibleTokens.array;
     }
 
@@ -216,7 +216,7 @@ contract ConverterRegistryData is IConverterRegistryData, ContractRegistryClient
       * @param _index index
       * @return convertible token at the given index
     */
-    function getConvertibleToken(uint256 _index) external view override returns (IERC20Token) {
+    function getConvertibleToken(uint256 _index) external view  returns (IERC20Token) {
         return IERC20Token(convertibleTokens.array[_index]);
     }
 
@@ -226,7 +226,7 @@ contract ConverterRegistryData is IConverterRegistryData, ContractRegistryClient
       * @param _value value
       * @return true if the given value is a convertible token, false if not
     */
-    function isConvertibleToken(address _value) external view override returns (bool) {
+    function isConvertibleToken(address _value) external view  returns (bool) {
         return convertibleTokens.table[_value].items.array.length > 0;
     }
 
@@ -236,7 +236,7 @@ contract ConverterRegistryData is IConverterRegistryData, ContractRegistryClient
       * @param _convertibleToken convertible token
       * @return number of smart tokens associated with the given convertible token
     */
-    function getConvertibleTokenSmartTokenCount(IERC20Token _convertibleToken) external view override returns (uint256) {
+    function getConvertibleTokenSmartTokenCount(IERC20Token _convertibleToken) external view  returns (uint256) {
         return convertibleTokens.table[address(_convertibleToken)].items.array.length;
     }
 
@@ -246,7 +246,7 @@ contract ConverterRegistryData is IConverterRegistryData, ContractRegistryClient
       * @param _convertibleToken convertible token
       * @return list of smart tokens associated with the given convertible token
     */
-    function getConvertibleTokenSmartTokens(IERC20Token _convertibleToken) external view override returns (address[] memory) {
+    function getConvertibleTokenSmartTokens(IERC20Token _convertibleToken) external view  returns (address[] memory) {
         return convertibleTokens.table[address(_convertibleToken)].items.array;
     }
 
@@ -256,7 +256,7 @@ contract ConverterRegistryData is IConverterRegistryData, ContractRegistryClient
       * @param _index index
       * @return smart token associated with the given convertible token at the given index
     */
-    function getConvertibleTokenSmartToken(IERC20Token _convertibleToken, uint256 _index) external view override returns (IConverterAnchor) {
+    function getConvertibleTokenSmartToken(IERC20Token _convertibleToken, uint256 _index) external view  returns (IConverterAnchor) {
         return IConverterAnchor(convertibleTokens.table[address(_convertibleToken)].items.array[_index]);
     }
 
@@ -267,7 +267,7 @@ contract ConverterRegistryData is IConverterRegistryData, ContractRegistryClient
       * @param _value value
       * @return true if the given value is a smart token of the given convertible token, false it not
     */
-    function isConvertibleTokenSmartToken(IERC20Token _convertibleToken, address _value) external view override returns (bool) {
+    function isConvertibleTokenSmartToken(IERC20Token _convertibleToken, address _value) external view  returns (bool) {
         return convertibleTokens.table[address(_convertibleToken)].items.table[_value].valid;
     }
 

@@ -38,7 +38,7 @@ contract EtherToken is IEtherToken, ERC20, Utils {
     /**
      * @dev deposit ether on behalf of the sender
      */
-    function deposit() public payable override {
+    function deposit() public payable  {
         depositTo(_msgSender());
     }
 
@@ -47,7 +47,7 @@ contract EtherToken is IEtherToken, ERC20, Utils {
      *
      * @param _amount  amount of ether to withdraw
      */
-    function withdraw(uint256 _amount) public override {
+    function withdraw(uint256 _amount) public  {
         withdrawTo(_msgSender(), _amount);
     }
 
@@ -56,7 +56,7 @@ contract EtherToken is IEtherToken, ERC20, Utils {
      *
      * @param _to      account to be entitled for the ether
      */
-    function depositTo(address _to) public payable override notThis(_to) {
+    function depositTo(address _to) public payable  notThis(_to) {
         _mint(_to, msg.value);
 
         emit Issuance(msg.value);
@@ -68,7 +68,7 @@ contract EtherToken is IEtherToken, ERC20, Utils {
      * @param _to      account to receive the ether
      * @param _amount  amount of ether to withdraw
      */
-    function withdrawTo(address payable _to, uint256 _amount) public override notThis(_to) {
+    function withdrawTo(address payable _to, uint256 _amount) public  notThis(_to) {
         _burn(_msgSender(), _amount);
 
         _to.transfer(_amount); // send the amount to the target account
@@ -76,7 +76,7 @@ contract EtherToken is IEtherToken, ERC20, Utils {
         emit Destruction(_amount);
     }
 
-    // ERC20 standard method overrides with some extra protection
+    // ERC20 standard method s with some extra protection
 
     /**
      * @dev send coins
@@ -87,7 +87,7 @@ contract EtherToken is IEtherToken, ERC20, Utils {
      *
      * @return true if the transfer was successful, false if it wasn't
      */
-    function transfer(address _to, uint256 _value) public override(IERC20, ERC20) notThis(_to) returns (bool) {
+    function transfer(address _to, uint256 _value) public (IERC20, ERC20) notThis(_to) returns (bool) {
         return super.transfer(_to, _value);
     }
 
@@ -105,7 +105,7 @@ contract EtherToken is IEtherToken, ERC20, Utils {
         address _from,
         address _to,
         uint256 _value
-    ) public override(IERC20, ERC20) notThis(_to) returns (bool) {
+    ) public (IERC20, ERC20) notThis(_to) returns (bool) {
         return super.transferFrom(_from, _to, _value);
     }
 

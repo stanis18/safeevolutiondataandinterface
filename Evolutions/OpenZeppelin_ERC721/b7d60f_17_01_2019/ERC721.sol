@@ -93,7 +93,7 @@ contract ERC721 is ERC165 {
     // / @notice  postcondition   _tokenApprovals[tokenId] == address(0)
 
 
-    /// @notice postcondition _tokenApprovals[tokenId] == msg.sender || 
+    /// @notice postcondition _tokenApprovals[tokenId] == msg.sender 
     /// @notice  emits Transfer
     function transferFrom(address from, address to, uint256 tokenId) public {
         require(_isApprovedOrOwner(msg.sender, tokenId));

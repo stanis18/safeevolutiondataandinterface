@@ -43,7 +43,7 @@ contract CheckpointStore is ICheckpointStore, AccessControl, Utils, Time {
      *
      * @param _address the address we're collecting the data for
      */
-    function addCheckpoint(address _address) external override validAddress(_address) {
+    function addCheckpoint(address _address) external  validAddress(_address) {
         require(hasRole(ROLE_OWNER, msg.sender), "ERR_ACCESS_DENIED");
 
         addCheckpoint(_address, time());
@@ -56,7 +56,7 @@ contract CheckpointStore is ICheckpointStore, AccessControl, Utils, Time {
      * @param _address the address we're collecting the data for
      * @param _time the checkpoint
      */
-    function addPastCheckpoint(address _address, uint256 _time) external override validAddress(_address) {
+    function addPastCheckpoint(address _address, uint256 _time) external  validAddress(_address) {
         require(hasRole(ROLE_SEEDER, msg.sender), "ERR_ACCESS_DENIED");
         require(_time < time(), "ERR_INVALID_TIME");
 
@@ -70,7 +70,7 @@ contract CheckpointStore is ICheckpointStore, AccessControl, Utils, Time {
      * @param _addresses the addresses we're collecting the data for
      * @param _times the checkpoints
      */
-    function addPastCheckpoints(address[] calldata _addresses, uint256[] calldata _times) external override {
+    function addPastCheckpoints(address[] calldata _addresses, uint256[] calldata _times) external  {
         require(hasRole(ROLE_SEEDER, msg.sender), "ERR_ACCESS_DENIED");
 
         uint256 length = _addresses.length;
@@ -94,7 +94,7 @@ contract CheckpointStore is ICheckpointStore, AccessControl, Utils, Time {
      *
      * @return the checkpoint
      */
-    function checkpoint(address _address) external view override returns (uint256) {
+    function checkpoint(address _address) external view  returns (uint256) {
         return data[_address];
     }
 

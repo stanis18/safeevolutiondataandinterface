@@ -71,7 +71,7 @@ contract LiquidityPoolV2Converter is LiquidityPoolConverter {
       *
       * @return see the converter types in the the main contract doc
     */
-    function converterType() public pure override returns (uint16) {
+    function converterType() public pure  returns (uint16) {
         return 2;
     }
 
@@ -80,7 +80,7 @@ contract LiquidityPoolV2Converter is LiquidityPoolConverter {
       *
       * @return true if the converter is active, false otherwise
     */
-    function isActive() public view override returns (bool) {
+    function isActive() public view  returns (bool) {
         return super.isActive() && address(priceOracle) != address(0);
     }
 
@@ -276,7 +276,7 @@ contract LiquidityPoolV2Converter is LiquidityPoolConverter {
       * @param _token   address of the reserve token
       * @param _weight  reserve weight, represented in ppm, 1-1000000
     */
-    function addReserve(IERC20Token _token, uint32 _weight) public override ownerOnly {
+    function addReserve(IERC20Token _token, uint32 _weight) public  ownerOnly {
         // verify that the converter doesn't have 2 reserves yet
         require(reserveTokenCount() < 2, "ERR_INVALID_RESERVE_COUNT");
         super.addReserve(_token, _weight);
@@ -323,7 +323,7 @@ contract LiquidityPoolV2Converter is LiquidityPoolConverter {
     function targetAmountAndFee(IERC20Token _sourceToken, IERC20Token _targetToken, uint256 _amount)
         public
         view
-        override
+        
         active
         validReserve(_sourceToken)
         validReserve(_targetToken)
@@ -373,7 +373,7 @@ contract LiquidityPoolV2Converter is LiquidityPoolConverter {
     */
     function doConvert(IERC20Token _sourceToken, IERC20Token _targetToken, uint256 _amount, address _trader, address payable _beneficiary)
         internal
-        override
+        
         active
         validReserve(_sourceToken)
         validReserve(_targetToken)

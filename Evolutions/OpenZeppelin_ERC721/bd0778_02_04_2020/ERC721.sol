@@ -12,7 +12,7 @@ import "./EnumerableSet.sol";
 import "./EnumerableMap.sol";
 import "./Counters.sol";
 
-/// @notice invariant forall (address addr)  previous_ownedTokensCount[addr]  == _holderTokens[addr]._inner._values.length
+// / @notice invariant forall (address addr)  previous_ownedTokensCount[addr]  == _holderTokens[addr]._inner._values.length
 contract ERC721 is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumerable {
     using SafeMath for uint256;
     using Address for address;
@@ -28,11 +28,6 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumerable 
 
     // Enumerable mapping from token ids to their owners
     EnumerableMap.UintToAddressMap private _tokenOwners;
-
-
-    // ---------Added---------------
-    mapping (address => uint256) private previous_ownedTokensCount;
-    // ---------Added---------------
 
 
     // Mapping from token ID to approved address
@@ -257,11 +252,6 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumerable 
 
         _holderTokens[from].remove(tokenId);
         _holderTokens[to].add(tokenId);
-
-        // ---------Added---------------
-        previous_ownedTokensCount[from] = previous_ownedTokensCount[from].sub(1);
-        previous_ownedTokensCount[to] = previous_ownedTokensCount[to].add(1);
-        // ---------Added---------------
 
         _tokenOwners.set(tokenId, to);
 

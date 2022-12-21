@@ -132,7 +132,7 @@ contract SmartToken is ERC20Token, BancorEventsDispatcher, SmartTokenInterface {
         return true;
     }
 
-    // ERC20 standard method overrides with some extra functionality
+    // ERC20 standard method s with some extra functionality
 
     // send coins
     function transfer(address _to, uint256 _value) public transfersAllowed returns (bool success) {

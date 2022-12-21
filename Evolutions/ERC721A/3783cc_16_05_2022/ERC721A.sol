@@ -101,7 +101,7 @@ contract ERC721A is IERC721A {
     }
 
     /**
-     * To change the starting tokenId, please override this function.
+     * To change the starting tokenId, please  this function.
      */
     function _startTokenId() internal view virtual returns (uint256) {
         return 0;
@@ -110,7 +110,7 @@ contract ERC721A is IERC721A {
     /**
      * @dev Burned tokens are calculated here, use _totalMinted() if you want to count just minted tokens.
      */
-    function totalSupply() public view override returns (uint256) {
+    function totalSupply() public view  returns (uint256) {
         // Counter underflow is impossible as _burnCounter cannot be incremented
         // more than _currentIndex - _startTokenId() times
         unchecked {
@@ -132,7 +132,7 @@ contract ERC721A is IERC721A {
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+    function supportsInterface(bytes4 interfaceId) public view virtual  returns (bool) {
         // The interface IDs are constants representing the first 4 bytes of the XOR of
         // all function selectors in the interface. See: https://eips.ethereum.org/EIPS/eip-165
         // e.g. `bytes4(i.functionA.selector ^ i.functionB.selector ^ ...)`
@@ -145,7 +145,7 @@ contract ERC721A is IERC721A {
     /**
      * @dev See {IERC721-balanceOf}.
      */
-    function balanceOf(address owner) public view override returns (uint256) {
+    function balanceOf(address owner) public view  returns (uint256) {
         if (owner == address(0)) revert BalanceQueryForZeroAddress();
         return _packedAddressData[owner] & BITMASK_ADDRESS_DATA_ENTRY;
     }
@@ -250,28 +250,28 @@ contract ERC721A is IERC721A {
     /**
      * @dev See {IERC721-ownerOf}.
      */
-    function ownerOf(uint256 tokenId) public view override returns (address) {
+    function ownerOf(uint256 tokenId) public view  returns (address) {
         return address(uint160(_packedOwnershipOf(tokenId)));
     }
 
     /**
      * @dev See {IERC721Metadata-name}.
      */
-    function name() public view virtual override returns (string memory) {
+    function name() public view virtual  returns (string memory) {
         return _name;
     }
 
     /**
      * @dev See {IERC721Metadata-symbol}.
      */
-    function symbol() public view virtual override returns (string memory) {
+    function symbol() public view virtual  returns (string memory) {
         return _symbol;
     }
 
     /**
      * @dev See {IERC721Metadata-tokenURI}.
      */
-    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+    function tokenURI(uint256 tokenId) public view virtual  returns (string memory) {
         if (!_exists(tokenId)) revert URIQueryForNonexistentToken();
 
         string memory baseURI = _baseURI();
@@ -281,7 +281,7 @@ contract ERC721A is IERC721A {
     /**
      * @dev Base URI for computing {tokenURI}. If set, the resulting URI for each
      * token will be the concatenation of the `baseURI` and the `tokenId`. Empty
-     * by default, can be overriden in child contracts.
+     * by default, can be n in child contracts.
      */
     function _baseURI() internal view virtual returns (string memory) {
         return '';
@@ -308,7 +308,7 @@ contract ERC721A is IERC721A {
     /**
      * @dev See {IERC721-approve}.
      */
-    function approve(address to, uint256 tokenId) public override {
+    function approve(address to, uint256 tokenId) public  {
         address owner = address(uint160(_packedOwnershipOf(tokenId)));
         if (to == owner) revert ApprovalToCurrentOwner();
 
@@ -324,7 +324,7 @@ contract ERC721A is IERC721A {
     /**
      * @dev See {IERC721-getApproved}.
      */
-    function getApproved(uint256 tokenId) public view override returns (address) {
+    function getApproved(uint256 tokenId) public view  returns (address) {
         if (!_exists(tokenId)) revert ApprovalQueryForNonexistentToken();
 
         return _tokenApprovals[tokenId];
@@ -333,7 +333,7 @@ contract ERC721A is IERC721A {
     /**
      * @dev See {IERC721-setApprovalForAll}.
      */
-    function setApprovalForAll(address operator, bool approved) public virtual override {
+    function setApprovalForAll(address operator, bool approved) public virtual  {
         if (operator == _msgSenderERC721A()) revert ApproveToCaller();
 
         _operatorApprovals[_msgSenderERC721A()][operator] = approved;
@@ -343,7 +343,7 @@ contract ERC721A is IERC721A {
     /**
      * @dev See {IERC721-isApprovedForAll}.
      */
-    function isApprovedForAll(address owner, address operator) public view virtual override returns (bool) {
+    function isApprovedForAll(address owner, address operator) public view virtual  returns (bool) {
         return _operatorApprovals[owner][operator];
     }
 
@@ -354,7 +354,7 @@ contract ERC721A is IERC721A {
         address from,
         address to,
         uint256 tokenId
-    ) public virtual override {
+    ) public virtual  {
         _transfer(from, to, tokenId);
     }
 
@@ -365,7 +365,7 @@ contract ERC721A is IERC721A {
         address from,
         address to,
         uint256 tokenId
-    ) public virtual override {
+    ) public virtual  {
         safeTransferFrom(from, to, tokenId, '');
     }
 
@@ -377,7 +377,7 @@ contract ERC721A is IERC721A {
         address to,
         uint256 tokenId,
         bytes memory _data
-    ) public virtual override {
+    ) public virtual  {
         _transfer(from, to, tokenId);
         if (to.code.length != 0)
             if (!_checkContractOnERC721Received(from, to, tokenId, _data)) {
@@ -747,7 +747,7 @@ contract ERC721A is IERC721A {
     /**
      * @dev Returns the message sender (defaults to `msg.sender`).
      *
-     * If you are writing GSN compatible contracts, you need to override this function.
+     * If you are writing GSN compatible contracts, you need to  this function.
      */
     function _msgSenderERC721A() internal view virtual returns (address) {
         return msg.sender;

@@ -58,14 +58,14 @@ abstract contract ConverterBase is IConverter, TokenHandler, TokenHolder, Contra
     */
     uint16 public constant version = 39;
 
-    IConverterAnchor public override anchor;            // converter anchor contract
-    IWhitelist public override conversionWhitelist;     // whitelist contract with list of addresses that are allowed to use the converter
+    IConverterAnchor public  anchor;            // converter anchor contract
+    IWhitelist public  conversionWhitelist;     // whitelist contract with list of addresses that are allowed to use the converter
     IERC20Token[] public reserveTokens;                 // ERC20 standard token addresses (prior version 17, use 'connectorTokens' instead)
     mapping (IERC20Token => Reserve) public reserves;   // reserve token addresses -> reserve data (prior version 17, use 'connectors' instead)
     uint32 public reserveRatio = 0;                     // ratio between the reserves and the market cap, equal to the total reserve weights
-    uint32 public override maxConversionFee = 0;        // maximum conversion fee for the lifetime of the contract,
+    uint32 public  maxConversionFee = 0;        // maximum conversion fee for the lifetime of the contract,
                                                         // represented in ppm, 0...1000000 (0 = no fee, 100 = 0.01%, 1000000 = 100%)
-    uint32 public override conversionFee = 0;           // current conversion fee, represented in ppm, 0...maxConversionFee
+    uint32 public  conversionFee = 0;           // current conversion fee, represented in ppm, 0...maxConversionFee
     bool public constant conversionsEnabled = true;     // deprecated, backward compatibility
 
     /**
@@ -197,22 +197,22 @@ abstract contract ConverterBase is IConverter, TokenHandler, TokenHolder, Contra
         require(_weight > 0 && _weight <= PPM_RESOLUTION, "ERR_INVALID_RESERVE_WEIGHT");
     }
 
-    // overrides interface declaration
-    function converterType() public pure virtual override returns (uint16);
+    // s interface declaration
+    function converterType() public pure virtual  returns (uint16);
 
-    // overrides interface declaration
+    // s interface declaration
     function targetAmountAndFee(IERC20Token _sourceToken, IERC20Token _targetToken, uint256 _amount)
         public
         view
         virtual
-        override
+        
         returns (uint256, uint256);
 
     /**
       * @dev deposits ether
       * can only be called if the converter has an ETH reserve
     */
-    receive() external override payable {
+    receive() external  payable {
         require(reserves[ETH_RESERVE_ADDRESS].isSet, "ERR_INVALID_RESERVE"); // require(hasETHReserve(), "ERR_INVALID_RESERVE");
         // a workaround for a problem when running solidity-coverage
         // see https://github.com/sc-forks/solidity-coverage/issues/487
@@ -228,7 +228,7 @@ abstract contract ConverterBase is IConverter, TokenHandler, TokenHolder, Contra
     */
     function withdrawETH(address payable _to)
         public
-        override
+        
         protected
         ownerOnly
         validReserve(ETH_RESERVE_ADDRESS)
@@ -261,7 +261,7 @@ abstract contract ConverterBase is IConverter, TokenHandler, TokenHolder, Contra
     */
     function setConversionWhitelist(IWhitelist _whitelist)
         public
-        override
+        
         ownerOnly
         notThis(address(_whitelist))
     {
@@ -273,7 +273,7 @@ abstract contract ConverterBase is IConverter, TokenHandler, TokenHolder, Contra
       *
       * @return true if the converter is active, false otherwise
     */
-    function isActive() public view virtual override returns (bool) {
+    function isActive() public view virtual  returns (bool) {
         return anchor.owner() == address(this);
     }
 
@@ -287,7 +287,7 @@ abstract contract ConverterBase is IConverter, TokenHandler, TokenHolder, Contra
     */
     function transferAnchorOwnership(address _newOwner)
         public
-        override
+        
         ownerOnly
         only(CONVERTER_UPGRADER)
     {
@@ -300,7 +300,7 @@ abstract contract ConverterBase is IConverter, TokenHandler, TokenHolder, Contra
       * can only be called by the contract owner
       * note that prior to version 28, you should use 'acceptTokenOwnership' instead
     */
-    function acceptAnchorOwnership() public virtual override ownerOnly {
+    function acceptAnchorOwnership() public virtual  ownerOnly {
         // verify the the converter has at least one reserve
         require(reserveTokenCount() > 0, "ERR_INVALID_RESERVE_COUNT");
         anchor.acceptOwnership();
@@ -325,7 +325,7 @@ abstract contract ConverterBase is IConverter, TokenHandler, TokenHolder, Contra
       *
       * @param _conversionFee new conversion fee, represented in ppm
     */
-    function setConversionFee(uint32 _conversionFee) public override ownerOnly {
+    function setConversionFee(uint32 _conversionFee) public  ownerOnly {
         require(_conversionFee <= maxConversionFee, "ERR_INVALID_CONVERSION_FEE");
         emit ConversionFeeUpdate(conversionFee, _conversionFee);
         conversionFee = _conversionFee;
@@ -343,7 +343,7 @@ abstract contract ConverterBase is IConverter, TokenHandler, TokenHolder, Contra
     */
     function withdrawTokens(IERC20Token _token, address _to, uint256 _amount)
         public
-        override(IConverter, TokenHolder)
+        (IConverter, TokenHolder)
         protected
         ownerOnly
     {
@@ -395,7 +395,7 @@ abstract contract ConverterBase is IConverter, TokenHandler, TokenHolder, Contra
     function addReserve(IERC20Token _token, uint32 _weight)
         public
         virtual
-        override
+        
         ownerOnly
         inactive
         validAddress(address(_token))
@@ -442,7 +442,7 @@ abstract contract ConverterBase is IConverter, TokenHandler, TokenHolder, Contra
     */
     function reserveBalance(IERC20Token _reserveToken)
         public
-        override
+        
         view
         validReserve(_reserveToken)
         returns (uint256)
@@ -473,7 +473,7 @@ abstract contract ConverterBase is IConverter, TokenHandler, TokenHolder, Contra
     */
     function convert(IERC20Token _sourceToken, IERC20Token _targetToken, uint256 _amount, address _trader, address payable _beneficiary)
         public
-        override
+        
         payable
         protected
         only(BANCOR_NETWORK)
@@ -573,28 +573,28 @@ abstract contract ConverterBase is IConverter, TokenHandler, TokenHolder, Contra
     /**
       * @dev deprecated since version 28, backward compatibility - use only for earlier versions
     */
-    function token() public view override returns (IConverterAnchor) {
+    function token() public view  returns (IConverterAnchor) {
         return anchor;
     }
 
     /**
       * @dev deprecated, backward compatibility
     */
-    function transferTokenOwnership(address _newOwner) public override ownerOnly {
+    function transferTokenOwnership(address _newOwner) public  ownerOnly {
         transferAnchorOwnership(_newOwner);
     }
 
     /**
       * @dev deprecated, backward compatibility
     */
-    function acceptTokenOwnership() public override ownerOnly {
+    function acceptTokenOwnership() public  ownerOnly {
         acceptAnchorOwnership();
     }
 
     /**
       * @dev deprecated, backward compatibility
     */
-    function connectors(IERC20Token _address) public view override returns (uint256, uint32, bool, bool, bool) {
+    function connectors(IERC20Token _address) public view  returns (uint256, uint32, bool, bool, bool) {
         Reserve memory reserve = reserves[_address];
         return(reserve.balance, reserve.weight, false, false, reserve.isSet);
     }
@@ -602,21 +602,21 @@ abstract contract ConverterBase is IConverter, TokenHandler, TokenHolder, Contra
     /**
       * @dev deprecated, backward compatibility
     */
-    function connectorTokens(uint256 _index) public view override returns (IERC20Token) {
+    function connectorTokens(uint256 _index) public view  returns (IERC20Token) {
         return ConverterBase.reserveTokens[_index];
     }
 
     /**
       * @dev deprecated, backward compatibility
     */
-    function connectorTokenCount() public view override returns (uint16) {
+    function connectorTokenCount() public view  returns (uint16) {
         return reserveTokenCount();
     }
 
     /**
       * @dev deprecated, backward compatibility
     */
-    function getConnectorBalance(IERC20Token _connectorToken) public view override returns (uint256) {
+    function getConnectorBalance(IERC20Token _connectorToken) public view  returns (uint256) {
         return reserveBalance(_connectorToken);
     }
 

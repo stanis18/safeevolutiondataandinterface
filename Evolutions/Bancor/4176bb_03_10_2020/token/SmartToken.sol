@@ -49,7 +49,7 @@ contract SmartToken is ISmartToken, Owned, ERC20Token, TokenHolder {
     */
     function issue(address _to, uint256 _amount)
         public
-        override
+        
         ownerOnly
         validAddress(_to)
         notThis(_to)
@@ -68,7 +68,7 @@ contract SmartToken is ISmartToken, Owned, ERC20Token, TokenHolder {
       * @param _from    account to remove the amount from
       * @param _amount  amount to decrease the supply by
     */
-    function destroy(address _from, uint256 _amount) public override ownerOnly {
+    function destroy(address _from, uint256 _amount) public  ownerOnly {
         balanceOf[_from] = balanceOf[_from].sub(_amount);
         totalSupply = totalSupply.sub(_amount);
 
@@ -76,7 +76,7 @@ contract SmartToken is ISmartToken, Owned, ERC20Token, TokenHolder {
         emit Destruction(_amount);
     }
 
-    // ERC20 standard method overrides with some extra functionality
+    // ERC20 standard method s with some extra functionality
 
     /**
       * @dev send coins
@@ -90,7 +90,7 @@ contract SmartToken is ISmartToken, Owned, ERC20Token, TokenHolder {
     */
     function transfer(address _to, uint256 _value)
         public
-        override(IERC20Token, ERC20Token)
+        (IERC20Token, ERC20Token)
         returns (bool)
     {
         return super.transfer(_to, _value);
@@ -109,7 +109,7 @@ contract SmartToken is ISmartToken, Owned, ERC20Token, TokenHolder {
     */
     function transferFrom(address _from, address _to, uint256 _value)
         public
-        override(IERC20Token, ERC20Token)
+        (IERC20Token, ERC20Token)
         returns (bool) 
     {
         return super.transferFrom(_from, _to, _value);

@@ -61,7 +61,7 @@ contract ConverterUpgrader is IConverterUpgrader, ContractRegistryClient {
       *
       * @param _version old converter version
     */
-    function upgrade(bytes32 _version) public override {
+    function upgrade(bytes32 _version) public  {
         upgradeOld(IConverter(msg.sender), _version);
     }
 
@@ -74,7 +74,7 @@ contract ConverterUpgrader is IConverterUpgrader, ContractRegistryClient {
       *
       * @param _version old converter version
     */
-    function upgrade(uint16 _version) public override {
+    function upgrade(uint16 _version) public  {
         upgradeOld(IConverter(msg.sender), bytes32(uint256(_version)));
     }
 

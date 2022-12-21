@@ -410,11 +410,11 @@ contract BancorChanger is Owned, SafeMath, ITokenChanger {
     }
 
     /*
-        utility, returns the expected return for selling the token for one of its reserve tokens, given a total supply override
+        utility, returns the expected return for selling the token for one of its reserve tokens, given a total supply 
 
         _reserveToken   reserve token contract address
         _sellAmount     amount to sell (in the smart token)
-        _totalSupply    total token supply, overrides the actual token total supply when calculating the return
+        _totalSupply    total token supply, s the actual token total supply when calculating the return
     */
     function getSaleReturn(IERC20Token _reserveToken, uint256 _sellAmount, uint256 _totalSupply)
         private

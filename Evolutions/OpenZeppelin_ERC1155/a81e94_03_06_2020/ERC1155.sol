@@ -70,7 +70,7 @@ contract ERC1155 is ERC165, IERC1155, IERC1155MetadataURI {
      * Clients calling this function must replace the `{id}` substring with the
      * actual token type ID.
      */
-    function uri(uint256) external view override returns (string memory) {
+    function uri(uint256) external view  returns (string memory) {
         return _uri;
     }
 
@@ -83,7 +83,7 @@ contract ERC1155 is ERC165, IERC1155, IERC1155MetadataURI {
         @param id ID of the token
         @return The account's balance of the token type requested
      */
-    function balanceOf(address account, uint256 id) public view override returns (uint256) {
+    function balanceOf(address account, uint256 id) public view  returns (uint256) {
         require(account != address(0), "ERC1155: balance query for the zero address");
         return _balances[id][account];
     }
@@ -103,7 +103,7 @@ contract ERC1155 is ERC165, IERC1155, IERC1155MetadataURI {
     )
         public
         view
-        override
+        
         returns (uint256[] memory)
     {
         require(accounts.length == ids.length, "ERC1155: accounts and IDs must have same lengths");
@@ -129,7 +129,7 @@ contract ERC1155 is ERC165, IERC1155, IERC1155MetadataURI {
      * @param operator address to set the approval
      * @param approved representing the status of the approval to be set
      */
-    function setApprovalForAll(address operator, bool approved) public virtual override {
+    function setApprovalForAll(address operator, bool approved) public virtual  {
         require(msg.sender != operator, "ERC1155: cannot set approval status for self");
         _operatorApprovals[msg.sender][operator] = approved;
         emit ApprovalForAll(msg.sender, operator, approved);
@@ -141,7 +141,7 @@ contract ERC1155 is ERC165, IERC1155, IERC1155MetadataURI {
         @param operator  Address of authorized operator
         @return           True if the operator is approved, false if not
     */
-    function isApprovedForAll(address account, address operator) public view override returns (bool) {
+    function isApprovedForAll(address account, address operator) public view  returns (bool) {
         return _operatorApprovals[account][operator];
     }
 
@@ -164,7 +164,7 @@ contract ERC1155 is ERC165, IERC1155, IERC1155MetadataURI {
     )
         public
         virtual
-        override
+        
     {
         require(to != address(0), "ERC1155: target address must be non-zero");
         require(
@@ -200,7 +200,7 @@ contract ERC1155 is ERC165, IERC1155, IERC1155MetadataURI {
     )
         public
         virtual
-        override
+        
     {
         require(ids.length == values.length, "ERC1155: IDs and values must have same lengths");
         require(to != address(0), "ERC1155: target address must be non-zero");

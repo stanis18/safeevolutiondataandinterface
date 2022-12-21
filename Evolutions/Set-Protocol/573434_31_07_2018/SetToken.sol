@@ -226,7 +226,7 @@ contract SetToken is
         return units;
     }
 
-    /* ============ Transfer Overrides ============ */
+    /* ============ Transfer s ============ */
 
     /*
      * ERC20 like transfer function but checks destination is valid

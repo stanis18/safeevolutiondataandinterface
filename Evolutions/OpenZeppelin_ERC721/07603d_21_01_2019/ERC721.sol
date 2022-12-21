@@ -85,10 +85,6 @@ contract ERC721 is ERC165, IERC721 {
 
     
 
-    /// @notice  postcondition ( ( _ownedTokensCount[_from]._value ==  __verifier_old_uint ( _ownedTokensCount[_from]._value ) - 1  &&  _from  != _to ) || ( _ownedTokensCount[_from] ==  __verifier_old_uint ( _ownedTokensCount[_from] ) &&  _from == _to )  ) 
-    /// @notice  postcondition ( ( _ownedTokensCount[_to]._value ==  __verifier_old_uint ( _ownedTokensCount[_to]._value ) + 1  &&  _from  != _to ) || ( _ownedTokensCount[_to] ==  __verifier_old_uint ( _ownedTokensCount[_to] ) &&  _from  == _to ) )
-    /// @notice  postcondition   _tokenApprovals[tokenId] == address(0)
-    /// @notice  emits  Transfer
     function transferFrom(address from, address to, uint256 tokenId) public {
         require(_isApprovedOrOwner(msg.sender, tokenId));
 

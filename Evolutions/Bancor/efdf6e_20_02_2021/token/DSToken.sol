@@ -46,7 +46,7 @@ contract DSToken is IDSToken, ERC20, Owned, Utils {
         tokenDecimals = _decimals;
     }
 
-    function decimals() public view override returns (uint8) {
+    function decimals() public view  returns (uint8) {
         return tokenDecimals;
     }
 
@@ -57,7 +57,7 @@ contract DSToken is IDSToken, ERC20, Owned, Utils {
      * @param _to      account to receive the new amount
      * @param _amount  amount to increase the supply by
      */
-    function issue(address _to, uint256 _amount) public override ownerOnly validAddress(_to) notThis(_to) {
+    function issue(address _to, uint256 _amount) public  ownerOnly validAddress(_to) notThis(_to) {
         _mint(_to, _amount);
 
         emit Issuance(_amount);
@@ -70,7 +70,7 @@ contract DSToken is IDSToken, ERC20, Owned, Utils {
      * @param _from    account to remove the amount from
      * @param _amount  amount to decrease the supply by
      */
-    function destroy(address _from, uint256 _amount) public override ownerOnly {
+    function destroy(address _from, uint256 _amount) public  ownerOnly {
         _burn(_from, _amount);
 
         emit Destruction(_amount);

@@ -65,7 +65,7 @@ contract LiquidityPoolV1Converter is LiquidityPoolConverter {
       *
       * @return see the converter types in the the main contract doc
     */
-    function converterType() public pure override returns (uint16) {
+    function converterType() public pure  returns (uint16) {
         return 1;
     }
 
@@ -75,7 +75,7 @@ contract LiquidityPoolV1Converter is LiquidityPoolConverter {
       * can only be called by the contract owner
       * note that prior to version 28, you should use 'acceptTokenOwnership' instead
     */
-    function acceptAnchorOwnership() public override ownerOnly {
+    function acceptAnchorOwnership() public  ownerOnly {
         super.acceptAnchorOwnership();
 
         emit Activation(converterType(), anchor, true);
@@ -88,7 +88,7 @@ contract LiquidityPoolV1Converter is LiquidityPoolConverter {
       * @param _token   address of the reserve token
       * @param _weight  reserve weight, represented in ppm, 1-1000000
     */
-    function addReserve(IERC20Token _token, uint32 _weight) public override ownerOnly {
+    function addReserve(IERC20Token _token, uint32 _weight) public  ownerOnly {
         super.addReserve(_token, _weight);
 
         isStandardPool =
@@ -110,7 +110,7 @@ contract LiquidityPoolV1Converter is LiquidityPoolConverter {
     function targetAmountAndFee(IERC20Token _sourceToken, IERC20Token _targetToken, uint256 _amount)
         public
         view
-        override
+        
         active
         validReserve(_sourceToken)
         validReserve(_targetToken)
@@ -146,7 +146,7 @@ contract LiquidityPoolV1Converter is LiquidityPoolConverter {
     */
     function doConvert(IERC20Token _sourceToken, IERC20Token _targetToken, uint256 _amount, address _trader, address payable _beneficiary)
         internal
-        override
+        
         returns (uint256)
     {
         // get expected target amount and fee
@@ -776,7 +776,7 @@ contract LiquidityPoolV1Converter is LiquidityPoolConverter {
 
     /**
       * @dev returns the current time
-      * utility to allow overrides for tests
+      * utility to allow s for tests
     */
     function time() internal view virtual returns (uint256) {
         return now;

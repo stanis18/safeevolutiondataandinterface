@@ -109,7 +109,7 @@ contract SmartToken is ERC20Token, Owned, ISmartToken {
         ChangerUpdate(prevChanger, changer);
     }
 
-    // ERC20 standard method overrides with some extra functionality
+    // ERC20 standard method s with some extra functionality
 
     // send coins
     function transfer(address _to, uint256 _value) public transfersAllowed returns (bool success) {

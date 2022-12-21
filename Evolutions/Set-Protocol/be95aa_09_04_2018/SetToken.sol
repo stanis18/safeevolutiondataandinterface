@@ -245,7 +245,7 @@ contract SetToken is
         return isComponent[_tokenAddress];
     }
 
-    /* ============ Transfer Overrides ============ */
+    /* ============ Transfer s ============ */
 
     /*
      * ERC20 like transfer function but checks destination is valid

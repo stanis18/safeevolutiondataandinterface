@@ -246,7 +246,7 @@ contract SetToken is
         return units;
     }
 
-    /* ============ Transfer Overrides ============ */
+    /* ============ Transfer s ============ */
 
     function transfer(
         address _to,

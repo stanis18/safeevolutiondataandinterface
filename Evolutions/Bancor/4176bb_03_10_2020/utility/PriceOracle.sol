@@ -22,8 +22,8 @@ contract PriceOracle is IPriceOracle, Utils {
     IERC20Token public tokenB;  // token B the oracle supports
     mapping (IERC20Token => uint8) public tokenDecimals;    // token -> token decimals
 
-    IChainlinkPriceOracle public override tokenAOracle;  // token A chainlink price oracle
-    IChainlinkPriceOracle public override tokenBOracle;  // token B chainlink price oracle
+    IChainlinkPriceOracle public  tokenAOracle;  // token A chainlink price oracle
+    IChainlinkPriceOracle public  tokenBOracle;  // token B chainlink price oracle
     mapping (IERC20Token => IChainlinkPriceOracle) public tokensToOracles;  // token -> price oracle for easier access
 
     /**
@@ -91,7 +91,7 @@ contract PriceOracle is IPriceOracle, Utils {
     function latestRate(IERC20Token _tokenA, IERC20Token _tokenB)
         public
         view
-        override
+        
         supportedTokens(_tokenA, _tokenB)
         returns (uint256, uint256)
     {
@@ -129,7 +129,7 @@ contract PriceOracle is IPriceOracle, Utils {
     function lastUpdateTime()
         public
         view
-        override
+        
         returns (uint256) {
         // returns the oldest timestamp between the two
         uint256 timestampA = tokenAOracle.latestTimestamp();
@@ -151,7 +151,7 @@ contract PriceOracle is IPriceOracle, Utils {
     function latestRateAndUpdateTime(IERC20Token _tokenA, IERC20Token _tokenB)
         public
         view
-        override
+        
         returns (uint256, uint256, uint256)
     {
         (uint256 numerator, uint256 denominator) = latestRate(_tokenA, _tokenB);

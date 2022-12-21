@@ -80,14 +80,14 @@ contract ERC721A is
   /**
    * @dev See {IERC721Enumerable-totalSupply}.
    */
-  function totalSupply() public view override returns (uint256) {
+  function totalSupply() public view  returns (uint256) {
     return currentIndex;
   }
 
   /**
    * @dev See {IERC721Enumerable-tokenByIndex}.
    */
-  function tokenByIndex(uint256 index) public view override returns (uint256) {
+  function tokenByIndex(uint256 index) public view  returns (uint256) {
     require(index < totalSupply(), "ERC721A: global index out of bounds");
     return index;
   }
@@ -100,7 +100,7 @@ contract ERC721A is
   function tokenOfOwnerByIndex(address owner, uint256 index)
     public
     view
-    override
+    
     returns (uint256)
   {
     require(index < balanceOf(owner), "ERC721A: owner index out of bounds");
@@ -129,7 +129,7 @@ contract ERC721A is
     public
     view
     virtual
-    override(ERC165, IERC165)
+    (ERC165, IERC165)
     returns (bool)
   {
     return
@@ -142,7 +142,7 @@ contract ERC721A is
   /**
    * @dev See {IERC721-balanceOf}.
    */
-  function balanceOf(address owner) public view override returns (uint256) {
+  function balanceOf(address owner) public view  returns (uint256) {
     require(owner != address(0), "ERC721A: balance query for the zero address");
     return uint256(_addressData[owner].balance);
   }
@@ -180,21 +180,21 @@ contract ERC721A is
   /**
    * @dev See {IERC721-ownerOf}.
    */
-  function ownerOf(uint256 tokenId) public view override returns (address) {
+  function ownerOf(uint256 tokenId) public view  returns (address) {
     return ownershipOf(tokenId).addr;
   }
 
   /**
    * @dev See {IERC721Metadata-name}.
    */
-  function name() public view virtual override returns (string memory) {
+  function name() public view virtual  returns (string memory) {
     return _name;
   }
 
   /**
    * @dev See {IERC721Metadata-symbol}.
    */
-  function symbol() public view virtual override returns (string memory) {
+  function symbol() public view virtual  returns (string memory) {
     return _symbol;
   }
 
@@ -205,7 +205,7 @@ contract ERC721A is
     public
     view
     virtual
-    override
+    
     returns (string memory)
   {
     require(
@@ -223,7 +223,7 @@ contract ERC721A is
   /**
    * @dev Base URI for computing {tokenURI}. If set, the resulting URI for each
    * token will be the concatenation of the `baseURI` and the `tokenId`. Empty
-   * by default, can be overriden in child contracts.
+   * by default, can be n in child contracts.
    */
   function _baseURI() internal view virtual returns (string memory) {
     return "";
@@ -232,7 +232,7 @@ contract ERC721A is
   /**
    * @dev See {IERC721-approve}.
    */
-  function approve(address to, uint256 tokenId) public override {
+  function approve(address to, uint256 tokenId) public  {
     address owner = ERC721A.ownerOf(tokenId);
     require(to != owner, "ERC721A: approval to current owner");
 
@@ -247,7 +247,7 @@ contract ERC721A is
   /**
    * @dev See {IERC721-getApproved}.
    */
-  function getApproved(uint256 tokenId) public view override returns (address) {
+  function getApproved(uint256 tokenId) public view  returns (address) {
     require(_exists(tokenId), "ERC721A: approved query for nonexistent token");
 
     return _tokenApprovals[tokenId];
@@ -256,7 +256,7 @@ contract ERC721A is
   /**
    * @dev See {IERC721-setApprovalForAll}.
    */
-  function setApprovalForAll(address operator, bool approved) public override {
+  function setApprovalForAll(address operator, bool approved) public  {
     require(operator != _msgSender(), "ERC721A: approve to caller");
 
     _operatorApprovals[_msgSender()][operator] = approved;
@@ -270,7 +270,7 @@ contract ERC721A is
     public
     view
     virtual
-    override
+    
     returns (bool)
   {
     return _operatorApprovals[owner][operator];
@@ -283,7 +283,7 @@ contract ERC721A is
     address from,
     address to,
     uint256 tokenId
-  ) public override {
+  ) public  {
     _transfer(from, to, tokenId);
   }
 
@@ -294,7 +294,7 @@ contract ERC721A is
     address from,
     address to,
     uint256 tokenId
-  ) public override {
+  ) public  {
     safeTransferFrom(from, to, tokenId, "");
   }
 
@@ -306,7 +306,7 @@ contract ERC721A is
     address to,
     uint256 tokenId,
     bytes memory _data
-  ) public override {
+  ) public  {
     _transfer(from, to, tokenId);
     require(
       _checkOnERC721Received(from, to, tokenId, _data),
