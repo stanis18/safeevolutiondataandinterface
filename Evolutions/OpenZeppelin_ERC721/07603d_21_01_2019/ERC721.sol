@@ -8,7 +8,7 @@ import "./Counters.sol";
 import "./ERC165.sol";
 
 
-// previous_ownedTokensCount[addr] == _ownedTokensCount[addr]._value 
+// _ownedTokensCount[addr] == _ownedTokensCount[addr]._value 
 contract ERC721 is ERC165, IERC721 {
     using SafeMath for uint256;
     using Address for address;
@@ -27,35 +27,34 @@ contract ERC721 is ERC165, IERC721 {
     // Mapping from owner to number of owned token
     mapping (address => Counters.Counter) private _ownedTokensCount;
 
-    // ---------Added---------------
-    mapping (address => uint256) private previous_ownedTokensCount;
-    // ---------Added---------------
-
     // Mapping from owner to operator approvals
     mapping (address => mapping (address => bool)) private _operatorApprovals;
 
     bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
-    
 
     constructor () public {
         // register the supported interfaces to conform to ERC721 via ERC165
         _registerInterface(_INTERFACE_ID_ERC721);
     }
 
-  
-    function balanceOf(address owner) public view returns (uint256) {
+    
+     /// @notice postcondition _ownedTokensCount[owner]._value  == balance
+    function balanceOf(address owner) public view returns (uint256 balance) {
         require(owner != address(0));
         return _ownedTokensCount[owner].current();
     }
 
-    
-    function ownerOf(uint256 tokenId) public view returns (address) {
+     /// @notice postcondition _tokenOwner[tokenId] == _owner
+     /// @notice postcondition  _owner !=  address(0)
+    function ownerOf(uint256 tokenId) public view returns (address _owner) {
         address owner = _tokenOwner[tokenId];
         require(owner != address(0));
         return owner;
     }
 
-
+    
+    /// @notice postcondition _tokenApprovals[tokenId] == to 
+    /// @notice emits Approval
     function approve(address to, uint256 tokenId) public {
         address owner = ownerOf(tokenId);
         require(to != owner);
@@ -65,26 +64,31 @@ contract ERC721 is ERC165, IERC721 {
         emit Approval(owner, to, tokenId);
     }
 
-  
-    function getApproved(uint256 tokenId) public view returns (address) {
+    /// @notice postcondition _tokenOwner[tokenId] != address(0)
+    /// @notice postcondition _tokenApprovals[tokenId] == approved
+    function getApproved(uint256 tokenId) public view returns (address approved) {
         require(_exists(tokenId));
         return _tokenApprovals[tokenId];
     }
 
-   
+    /// @notice postcondition _operatorApprovals[msg.sender][to] == approved
+    /// @notice emits ApprovalForAll
     function setApprovalForAll(address to, bool approved) public {
         require(to != msg.sender);
         _operatorApprovals[msg.sender][to] = approved;
         emit ApprovalForAll(msg.sender, to, approved);
     }
 
-   
-    function isApprovedForAll(address owner, address operator) public view returns (bool) {
+   /// @notice postcondition _operatorApprovals[owner][operator] == approved
+    function isApprovedForAll(address owner, address operator) public view returns (bool approved) {
         return _operatorApprovals[owner][operator];
     }
 
     
-
+    /// @notice  postcondition ( ( _ownedTokensCount[from]._value ==  __verifier_old_uint (_ownedTokensCount[from]._value ) - 1  &&  from  != to ) || ( from == to )  ) 
+    /// @notice  postcondition ( ( _ownedTokensCount[to]._value ==  __verifier_old_uint ( _ownedTokensCount[to]._value ) + 1  &&  from  != to ) || ( from  == to ) )
+    /// @notice  postcondition  _tokenOwner[tokenId] == to
+    /// @notice  emits Transfer
     function transferFrom(address from, address to, uint256 tokenId) public {
         require(_isApprovedOrOwner(msg.sender, tokenId));
 
@@ -92,11 +96,18 @@ contract ERC721 is ERC165, IERC721 {
     }
 
    
+    /// @notice  postcondition ( ( _ownedTokensCount[from]._value ==  __verifier_old_uint (_ownedTokensCount[from]._value ) - 1  &&  from  != to ) || ( from == to )  ) 
+    /// @notice  postcondition ( ( _ownedTokensCount[to]._value ==  __verifier_old_uint ( _ownedTokensCount[to]._value ) + 1  &&  from  != to ) || ( from  == to ) )
+    /// @notice  postcondition  _tokenOwner[tokenId] == to
+    /// @notice  emits Transfer
     function safeTransferFrom(address from, address to, uint256 tokenId) public {
         safeTransferFrom(from, to, tokenId, "");
     }
 
-   
+    /// @notice  postcondition ( ( _ownedTokensCount[from]._value ==  __verifier_old_uint (_ownedTokensCount[from]._value ) - 1  &&  from  != to ) || ( from == to )  ) 
+    /// @notice  postcondition ( ( _ownedTokensCount[to]._value ==  __verifier_old_uint ( _ownedTokensCount[to]._value ) + 1  &&  from  != to ) || ( from  == to ) )
+    /// @notice  postcondition  _tokenOwner[tokenId] == to
+    /// @notice  emits Transfer
     function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public {
         transferFrom(from, to, tokenId);
         require(_checkOnERC721Received(from, to, tokenId, _data));
@@ -114,7 +125,7 @@ contract ERC721 is ERC165, IERC721 {
         return (spender == owner || getApproved(tokenId) == spender || isApprovedForAll(owner, spender));
     }
 
-    
+     /// @notice  emits Transfer
     function _mint(address to, uint256 tokenId) internal {
         require(to != address(0));
         require(!_exists(tokenId));
@@ -125,7 +136,7 @@ contract ERC721 is ERC165, IERC721 {
         emit Transfer(address(0), to, tokenId);
     }
 
-   
+     /// @notice  emits Transfer
     function _burn(address owner, uint256 tokenId) internal {
         require(ownerOf(tokenId) == owner);
 
@@ -137,12 +148,12 @@ contract ERC721 is ERC165, IERC721 {
         emit Transfer(owner, address(0), tokenId);
     }
 
-   
+     /// @notice  emits Transfer
     function _burn(uint256 tokenId) internal {
         _burn(ownerOf(tokenId), tokenId);
     }
 
-   
+    /// @notice  emits Transfer
     function _transferFrom(address from, address to, uint256 tokenId) internal {
         require(ownerOf(tokenId) == from);
         require(to != address(0));
@@ -151,11 +162,6 @@ contract ERC721 is ERC165, IERC721 {
 
         _ownedTokensCount[from].decrement();
         _ownedTokensCount[to].increment();
-
-        // ---------Added---------------
-        previous_ownedTokensCount[from] = previous_ownedTokensCount[from].sub(1);
-        previous_ownedTokensCount[to] = previous_ownedTokensCount[to].add(1);
-        // ---------Added---------------
 
         _tokenOwner[tokenId] = to;
 
@@ -180,4 +186,8 @@ contract ERC721 is ERC165, IERC721 {
             _tokenApprovals[tokenId] = address(0);
         }
     }
+
+    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
+    event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
+    event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
 }

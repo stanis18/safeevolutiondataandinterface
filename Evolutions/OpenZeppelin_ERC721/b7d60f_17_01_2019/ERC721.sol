@@ -52,7 +52,7 @@ contract ERC721 is ERC165 {
         return owner;
     }
    
-    // / @notice postcondition _tokenOwner[tokenId] == msg.sender || _operatorApprovals[_tokenApprovals[tokenId]][msg.sender]
+    /// @notice postcondition _tokenOwner[tokenId] == msg.sender || _operatorApprovals[_tokenApprovals[tokenId]][msg.sender]
     /// @notice postcondition _tokenApprovals[tokenId] == to 
     /// @notice emits Approval
     function approve(address to, uint256 tokenId) public {
@@ -86,26 +86,28 @@ contract ERC721 is ERC165 {
         return _operatorApprovals[owner][operator];
     }
 
-    
 
-    // / @notice  postcondition ( ( _ownedTokensCount[_from] ==  __verifier_old_uint (_ownedTokensCount[_from] ) - 1  &&  _from  != _to ) || ( _ownedTokensCount[_from] ==  __verifier_old_uint ( _ownedTokensCount[_from] ) &&  _from == _to )  ) 
-    // / @notice  postcondition ( ( _ownedTokensCount[_to] ==  __verifier_old_uint ( _ownedTokensCount[_to] ) + 1  &&  _from  != _to ) || ( _ownedTokensCount[_to] ==  __verifier_old_uint ( _ownedTokensCount[_to] ) &&  _from  == _to ) )
-    // / @notice  postcondition   _tokenApprovals[tokenId] == address(0)
-
-
-    /// @notice postcondition _tokenApprovals[tokenId] == msg.sender 
+    /// @notice  postcondition ( ( _ownedTokensCount[from] ==  __verifier_old_uint (_ownedTokensCount[from] ) - 1  &&  from  != to ) || ( from == to )  ) 
+    /// @notice  postcondition ( ( _ownedTokensCount[to] ==  __verifier_old_uint ( _ownedTokensCount[to] ) + 1  &&  from  != to ) || ( from  == to ) )
+    /// @notice  postcondition  _tokenOwner[tokenId] == to
     /// @notice  emits Transfer
     function transferFrom(address from, address to, uint256 tokenId) public {
         require(_isApprovedOrOwner(msg.sender, tokenId));
-       //  return (spender == owner || getApproved(tokenId) == spender || isApprovedForAll(owner, spender));
+       
         _transferFrom(from, to, tokenId);
     }
 
+    /// @notice  postcondition ( ( _ownedTokensCount[from] ==  __verifier_old_uint (_ownedTokensCount[from] ) - 1  &&  from  != to ) || ( from == to )  ) 
+    /// @notice  postcondition ( ( _ownedTokensCount[to] ==  __verifier_old_uint ( _ownedTokensCount[to] ) + 1  &&  from  != to ) || ( from  == to ) )
+    /// @notice  postcondition  _tokenOwner[tokenId] == to
     /// @notice  emits  Transfer
     function safeTransferFrom(address from, address to, uint256 tokenId) public {
         safeTransferFrom(from, to, tokenId, "");
     }
 
+    /// @notice  postcondition ( ( _ownedTokensCount[from] ==  __verifier_old_uint (_ownedTokensCount[from] ) - 1  &&  from  != to ) || ( from == to )  ) 
+    /// @notice  postcondition ( ( _ownedTokensCount[to] ==  __verifier_old_uint ( _ownedTokensCount[to] ) + 1  &&  from  != to ) || ( from  == to ) )
+    /// @notice  postcondition  _tokenOwner[tokenId] == to
     /// @notice  emits  Transfer
     function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public {
         transferFrom(from, to, tokenId);

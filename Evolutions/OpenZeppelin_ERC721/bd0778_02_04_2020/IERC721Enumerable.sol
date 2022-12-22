@@ -8,10 +8,6 @@ interface IERC721Enumerable  {
     function tokenByIndex(uint256 index) external view returns (uint256);
 
 
-     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
-    event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
-    event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
-
     /**
      * @dev Returns the number of NFTs in `owner`'s account.
      */

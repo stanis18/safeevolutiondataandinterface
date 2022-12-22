@@ -31,11 +31,6 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
     mapping (address => uint256) private _balances;
 
 
-    // ------------Added -------------
-    mapping (address => uint256) private previous_ownedTokensCount;
-    // ------------Added -------------
-
-
     // Mapping from token ID to approved address
     mapping (uint256 => address) private _tokenApprovals;
 
@@ -311,11 +306,6 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
 
         _balances[from] -= 1;
         _balances[to] += 1;
-
-        previous_ownedTokensCount[from] = previous_ownedTokensCount[from].sub(1);
-        previous_ownedTokensCount[to] = previous_ownedTokensCount[to].add(1);
-
-
 
         _owners[tokenId] = to;
 

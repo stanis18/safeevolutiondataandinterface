@@ -107,7 +107,7 @@ library EnumerableMap {
 
 
     function set(UintToAddressMap storage map, uint256 key, address value) internal returns (bool) {
-        // return _set(map._inner, bytes32(key), bytes32(uint256(value)));
+        return _set(map._inner, bytes32(key), bytes32(uint256(value)));
     }
 
 
