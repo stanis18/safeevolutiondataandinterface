@@ -188,7 +188,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumerable 
     /// @notice  postcondition ( ( _holderTokens[to]._inner._values.length ==  __verifier_old_uint ( _holderTokens[to]._inner._values.length ) + 1  &&  from  != to ) || ( from  == to ) )
     // / @notice  postcondition  _tokenOwner[tokenId] == to
     /// @notice  emits Approval
-     /// @notice  emits Transfer
+    /// @notice  emits Transfer
     function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public   {
         require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: transfer caller is not owner nor approved");
         _safeTransfer(from, to, tokenId, _data);

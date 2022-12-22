@@ -8,16 +8,6 @@ import "./IERC1888.sol";
 contract Registry is ERC1155, ERC1888 {
 
 
-
-
-
-
-
-
-
-
-	
-
 	mapping(uint256 => Certificate) public certificateStorage;
 	mapping(uint256 => mapping(address => uint256)) public _claimedBalances;
 
@@ -25,6 +15,10 @@ contract Registry is ERC1155, ERC1888 {
 
 	constructor(string memory _uri) public ERC1155(_uri) {}
 
+
+	/// @notice postcondition _id == _latestCertificateId
+	/// @notice emits TransferSingle 
+	/// @notice emits IssuanceSingle 
 	function issue(address _to, bytes calldata _validityData, int256 _topic, uint256 _value, bytes calldata _data) external  returns (uint256 _id) {
 		_validate(_msgSender(), _validityData);
 
@@ -41,6 +35,7 @@ contract Registry is ERC1155, ERC1888 {
 		emit IssuanceSingle(_msgSender(), _topic, _id);
 	}
 
+	/// @notice emits TransferSingle
 	function mint(uint256 _id, address _to, uint256 _quantity) external {
 		require(_quantity > 0, "issue(): _value must be higher than 0.");
 
@@ -50,6 +45,8 @@ contract Registry is ERC1155, ERC1888 {
 		ERC1155._mint(_to, _id, _quantity, new bytes(0));
 	}
 
+	/// @notice emits ClaimSingle
+	/// @notice emits TransferSingle 
 	function safeTransferAndClaimFrom(
 		address _from,
 		address _to,
@@ -75,6 +72,9 @@ contract Registry is ERC1155, ERC1888 {
 		emit ClaimSingle(_from, _to, cert.topic, _id, _value, _claimData); //_claimSubject address ??
 	}
 
+	/// @notice emits TransferBatch
+	/// @notice emits TransferSingle
+	/// @notice emits ClaimBatch
 	function safeBatchTransferAndClaimFrom(
 		address _from,
 		address _to,
@@ -137,6 +137,7 @@ contract Registry is ERC1155, ERC1888 {
         return batchClaimBalances;
 	}
 
+	/// @notice emits TransferSingle
 	function _burn(address _from, uint256 _id, uint256 _value) internal  {
 		ERC1155._burn(_from, _id, _value);
 

@@ -14,6 +14,8 @@ contract Registry is ERC1155Mintable, ERC1888 {
 	// Mapping from certificate id to position in the allCertificates array
     mapping(uint256 => uint256) private _allCertificatesIndex;
 
+	/// @notice postcondition _id == _allCertificates.length
+	/// @notice emits IssuanceSingle 
 	function issue(address _to, bytes calldata _validityData, int256 _topic, uint256 _value, bytes calldata _data) external returns (uint256 _id) {
 		_validate(msg.sender, _validityData);
 

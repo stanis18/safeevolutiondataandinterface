@@ -68,7 +68,8 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
      *
      * - `account` cannot be the zero address.
      */
-    function balanceOf(address account, uint256 id) public view   returns (uint256) {
+    /// @notice postcondition _balances[id][account] == balance  
+    function balanceOf(address account, uint256 id) public view   returns (uint256 balance) {
         require(account != address(0), "ERC1155: address zero is not a valid owner");
         return _balances[id][account];
     }
@@ -80,17 +81,25 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
      *
      * - `accounts` and `ids` must have the same length.
      */
+    /// @notice postcondition batchBalances.length == accounts.length 
+    /// @notice postcondition batchBalances.length == ids.length
+    /// @notice postcondition forall (uint x) !( 0 <= x &&  x < batchBalances.length ) || batchBalances[x] == _balances[ids[x]][accounts[x]]  
     function balanceOfBatch(address[] memory accounts, uint256[] memory ids)
         public
         view
         
         
-        returns (uint256[] memory)
+        returns (uint256[] memory batchBalances)
     {
         require(accounts.length == ids.length, "ERC1155: accounts and ids length mismatch");
 
         uint256[] memory batchBalances = new uint256[](accounts.length);
 
+        /// @notice invariant (batchBalances.length == ids.length && batchBalances.length == accounts.length)
+        /// @notice invariant (0 <= i && i <= accounts.length)
+        /// @notice invariant (0 <= i && i <= ids.length)
+        /// @notice invariant forall(uint k)  ids[k] == __verifier_old_uint(ids[k])
+        /// @notice invariant forall (uint j) !(0 <= j && j < i && j < accounts.length ) || batchBalances[j] == _balances[ids[j]][accounts[j]]
         for (uint256 i = 0; i < accounts.length; ++i) {
             batchBalances[i] = balanceOf(accounts[i], ids[i]);
         }
@@ -101,20 +110,24 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
     /**
      * @dev See {IERC1155-setApprovalForAll}.
      */
+    /// @notice  postcondition _operatorApprovals[msg.sender][operator] ==  approved 
+    /// @notice  emits  ApprovalForAll 
     function setApprovalForAll(address operator, bool approved) public   {
         _setApprovalForAll(_msgSender(), operator, approved);
     }
 
-    /**
-     * @dev See {IERC1155-isApprovedForAll}.
-     */
-    function isApprovedForAll(address account, address operator) public view   returns (bool) {
+    
+    /// @notice postcondition _operatorApprovals[account][operator] == approved
+    function isApprovedForAll(address account, address operator) public view   returns (bool approved) {
         return _operatorApprovals[account][operator];
     }
 
-    /**
-     * @dev See {IERC1155-safeTransferFrom}.
-     */
+    /// @notice postcondition to != address(0)
+    /// @notice postcondition _operatorApprovals[from][msg.sender] || from == msg.sender
+    /// @notice postcondition __verifier_old_uint ( _balances[id][from] ) >= amount    
+    /// @notice postcondition _balances[id][from] == __verifier_old_uint ( _balances[id][from] ) - amount
+    /// @notice postcondition _balances[id][to] == __verifier_old_uint ( _balances[id][to] ) + amount
+    /// @notice emits TransferSingle  
     function safeTransferFrom(
         address from,
         address to,
@@ -129,9 +142,12 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
         _safeTransferFrom(from, to, id, amount, data);
     }
 
-    /**
-     * @dev See {IERC1155-safeBatchTransferFrom}.
-     */
+    /// @notice postcondition _ids.length == _values.length
+    /// @notice postcondition _to != address(0)
+    /// @notice postcondition operatorApproval[_from][msg.sender] == true || _from == msg.sender
+    /// @notice postcondition forall (uint t) !( 0 <= t &&  t < _ids.length ) || (balances[_ids[t]][_from] <= __verifier_old_uint(balances[_ids[t]][_from]) || _from == _to )
+    /// @notice postcondition forall (uint t) !( 0 <= t &&  t < _ids.length ) || (balances[_ids[t]][_to] >= __verifier_old_uint(balances[_ids[t]][_to]) || _from == _to )
+    /// @notice emits TransferBatch
     function safeBatchTransferFrom(
         address from,
         address to,
@@ -158,6 +174,8 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
      * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155Received} and return the
      * acceptance magic value.
      */
+
+     ///@notice emits TransferSingle
     function _safeTransferFrom(
         address from,
         address to,
@@ -197,6 +215,7 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
      * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155BatchReceived} and return the
      * acceptance magic value.
      */
+     /// @notice emits TransferBatch
     function _safeBatchTransferFrom(
         address from,
         address to,
@@ -211,6 +230,11 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
 
         _beforeTokenTransfer(operator, from, to, ids, amounts, data);
 
+        /// @notice invariant (0 <= i && i <= ids.length)
+        /// @notice invariant (0 <= i && i <= amounts.length)
+        /// @notice invariant forall(uint k)  ids[k] == __verifier_old_uint(ids[k])
+        /// @notice invariant forall(uint k)  amounts[k] == __verifier_old_uint(amounts[k])
+        /// @notice invariant ids.length == amounts.length
         for (uint256 i = 0; i < ids.length; ++i) {
             uint256 id = ids[i];
             uint256 amount = amounts[i];
@@ -253,17 +277,8 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
         _uri = newuri;
     }
 
-    /**
-     * @dev Creates `amount` tokens of token type `id`, and assigns them to `to`.
-     *
-     * Emits a {TransferSingle} event.
-     *
-     * Requirements:
-     *
-     * - `to` cannot be the zero address.
-     * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155Received} and return the
-     * acceptance magic value.
-     */
+   
+    /// @notice emits TransferSingle
     function _mint(
         address to,
         uint256 id,
@@ -286,17 +301,8 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
         _doSafeTransferAcceptanceCheck(operator, address(0), to, id, amount, data);
     }
 
-    /**
-     * @dev xref:ROOT:erc1155.adoc#batch-operations[Batched] version of {_mint}.
-     *
-     * Emits a {TransferBatch} event.
-     *
-     * Requirements:
-     *
-     * - `ids` and `amounts` must have the same length.
-     * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155BatchReceived} and return the
-     * acceptance magic value.
-     */
+   
+    /// @notice emits TransferBatch
     function _mintBatch(
         address to,
         uint256[] memory ids,
@@ -331,6 +337,7 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
      * - `from` cannot be the zero address.
      * - `from` must have at least `amount` tokens of token type `id`.
      */
+    /// @notice emits TransferSingle 
     function _burn(
         address from,
         uint256 id,
@@ -364,6 +371,7 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
      *
      * - `ids` and `amounts` must have the same length.
      */
+    /// @notice emits TransferBatch
     function _burnBatch(
         address from,
         uint256[] memory ids,
@@ -397,6 +405,7 @@ contract ERC1155 is Context, ERC165, IERC1155, IERC1155MetadataURI {
      *
      * Emits an {ApprovalForAll} event.
      */
+     /// @notice emits ApprovalForAll 
     function _setApprovalForAll(
         address owner,
         address operator,

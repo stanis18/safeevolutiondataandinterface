@@ -54,18 +54,16 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
         //     || super.supportsInterface(interfaceId);
     }
 
-    /**
-     * @dev See {IERC721-balanceOf}.
-     */
-    function balanceOf(address owner) public view   returns (uint256) {
+
+    /// @notice postcondition _balances[owner] == balance
+    function balanceOf(address owner) public view   returns (uint256 balance) {
         require(owner != address(0), "ERC721: balance query for the zero address");
         return _balances[owner];
     }
 
-    /**
-     * @dev See {IERC721-ownerOf}.
-     */
-    function ownerOf(uint256 tokenId) public view   returns (address) {
+    /// @notice postcondition _owners[tokenId] == own
+    /// @notice postcondition  own !=  address(0)
+    function ownerOf(uint256 tokenId) public view   returns (address own) {
         address owner = _owners[tokenId];
         require(owner != address(0), "ERC721: owner query for nonexistent token");
         return owner;
@@ -102,7 +100,9 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
         return "";
     }
 
-    
+    /// @notice postcondition _owners[tokenId] == msg.sender || _operatorApprovals[_tokenApprovals[tokenId]][msg.sender]
+    /// @notice postcondition _tokenApprovals[tokenId] == to 
+    /// @notice emits Approval
     function approve(address to, uint256 tokenId) public {
         address owner = ERC721.ownerOf(tokenId);
         require(to != owner, "ERC721: approval to current owner");
@@ -114,18 +114,16 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
         _approve(to, tokenId);
     }
 
-    /**
-     * @dev See {IERC721-getApproved}.
-     */
-    function getApproved(uint256 tokenId) public view   returns (address) {
+     /// @notice postcondition _owners[tokenId] != address(0)
+    /// @notice postcondition _tokenApprovals[tokenId] == approved
+    function getApproved(uint256 tokenId) public view   returns (address approved) {
         require(_exists(tokenId), "ERC721: approved query for nonexistent token");
 
         return _tokenApprovals[tokenId];
     }
 
-    /**
-     * @dev See {IERC721-setApprovalForAll}.
-     */
+    /// @notice postcondition _operatorApprovals[msg.sender][operator] == approved
+    /// @notice emits ApprovalForAll
     function setApprovalForAll(address operator, bool approved) public   {
         require(operator != _msgSender(), "ERC721: approve to caller");
 
@@ -133,16 +131,15 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
         emit ApprovalForAll(_msgSender(), operator, approved);
     }
 
-    /**
-     * @dev See {IERC721-isApprovedForAll}.
-     */
-    function isApprovedForAll(address owner, address operator) public view   returns (bool) {
+      /// @notice postcondition _operatorApprovals[owner][operator] == approved
+    function isApprovedForAll(address owner, address operator) public view   returns (bool approved) {
         return _operatorApprovals[owner][operator];
     }
 
-    /**
-     * @dev See {IERC721-transferFrom}.
-     */
+    /// @notice  postcondition ( ( _ownedTokensCount[from] ==  __verifier_old_uint (_ownedTokensCount[from] ) - 1  &&  from  != to ) || ( from == to )  ) 
+    /// @notice  postcondition ( ( _ownedTokensCount[to] ==  __verifier_old_uint ( _ownedTokensCount[to] ) + 1  &&  from  != to ) || ( from  == to ) )
+    /// @notice  postcondition  _tokenOwner[tokenId] == to
+    /// @notice  emits Transfer
     function transferFrom(address from, address to, uint256 tokenId) public   {
         //solhint-disable-next-line max-line-length
         require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: transfer caller is not owner nor approved");
@@ -150,16 +147,18 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
         _transfer(from, to, tokenId);
     }
 
-    /**
-     * @dev See {IERC721-safeTransferFrom}.
-     */
+    /// @notice  postcondition ( ( _ownedTokensCount[from] ==  __verifier_old_uint (_ownedTokensCount[from] ) - 1  &&  from  != to ) || ( from == to )  ) 
+    /// @notice  postcondition ( ( _ownedTokensCount[to] ==  __verifier_old_uint ( _ownedTokensCount[to] ) + 1  &&  from  != to ) || ( from  == to ) )
+    /// @notice  postcondition  _tokenOwner[tokenId] == to
+    /// @notice  emits Transfer
     function safeTransferFrom(address from, address to, uint256 tokenId) public   {
         safeTransferFrom(from, to, tokenId, "");
     }
 
-    /**
-     * @dev See {IERC721-safeTransferFrom}.
-     */
+    /// @notice  postcondition ( ( _ownedTokensCount[from] ==  __verifier_old_uint (_ownedTokensCount[from] ) - 1  &&  from  != to ) || ( from == to )  ) 
+    /// @notice  postcondition ( ( _ownedTokensCount[to] ==  __verifier_old_uint ( _ownedTokensCount[to] ) + 1  &&  from  != to ) || ( from  == to ) )
+    /// @notice  postcondition  _tokenOwner[tokenId] == to
+    /// @notice  emits Transfer
     function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public   {
         require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: transfer caller is not owner nor approved");
         _safeTransfer(from, to, tokenId, _data);
@@ -183,6 +182,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
      *
      * Emits a {Transfer} event.
      */
+    /// @notice  emits Transfer
     function _safeTransfer(address from, address to, uint256 tokenId, bytes memory _data) internal  {
         _transfer(from, to, tokenId);
         require(_checkOnERC721Received(from, to, tokenId, _data), "ERC721: transfer to non ERC721Receiver implementer");
@@ -223,6 +223,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
      *
      * Emits a {Transfer} event.
      */
+    /// @notice  emits Transfer
     function _safeMint(address to, uint256 tokenId) internal  {
         _safeMint(to, tokenId, "");
     }
@@ -231,6 +232,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
      * @dev Same as {xref-ERC721-_safeMint-address-uint256-}[`_safeMint`], with an additional `data` parameter which is
      * forwarded in {IERC721Receiver-onERC721Received} to contract recipients.
      */
+    /// @notice  emits Transfer
     function _safeMint(address to, uint256 tokenId, bytes memory _data) internal  {
         _mint(to, tokenId);
         require(_checkOnERC721Received(address(0), to, tokenId, _data), "ERC721: transfer to non ERC721Receiver implementer");
@@ -248,6 +250,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
      *
      * Emits a {Transfer} event.
      */
+    /// @notice  emits Transfer
     function _mint(address to, uint256 tokenId) internal  {
         require(to != address(0), "ERC721: mint to the zero address");
         require(!_exists(tokenId), "ERC721: token already minted");
@@ -270,6 +273,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
      *
      * Emits a {Transfer} event.
      */
+    /// @notice  emits Transfer
     function _burn(uint256 tokenId) internal  {
         address owner = ERC721.ownerOf(tokenId);
 
@@ -295,6 +299,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
      *
      * Emits a {Transfer} event.
      */
+    /// @notice  emits Transfer
     function _transfer(address from, address to, uint256 tokenId) internal  {
         require(ERC721.ownerOf(tokenId) == from, "ERC721: transfer of token that is not own");
         require(to != address(0), "ERC721: transfer to the zero address");
@@ -317,6 +322,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
      *
      * Emits a {Approval} event.
      */
+    /// @notice  emits Approval
     function _approve(address to, uint256 tokenId) internal  {
         _tokenApprovals[tokenId] = to;
         emit Approval(ERC721.ownerOf(tokenId), to, tokenId);

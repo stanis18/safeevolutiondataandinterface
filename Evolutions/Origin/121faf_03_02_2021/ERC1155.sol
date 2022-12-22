@@ -52,20 +52,13 @@ contract ERC1155 is IERC1155, ERC165, CommonConstants
 
 /////////////////////////////////////////// ERC1155 //////////////////////////////////////////////
 
-    /**
-        @notice Transfers `_value` amount of an `_id` from the `_from` address to the `_to` address specified (with safety call).
-        @dev Caller must be approved to manage the tokens being transferred out of the `_from` account (see "Approval" section of the standard).
-        MUST revert if `_to` is the zero address.
-        MUST revert if balance of holder for token `_id` is lower than the `_value` sent.
-        MUST revert on any other error.
-        MUST emit the `TransferSingle` event to reflect the balance change (see "Safe Transfer Rules" section of the standard).
-        After the above conditions are met, this function MUST check if `_to` is a smart contract (e.g. code size > 0). If so, it MUST call `onERC1155Received` on `_to` and act appropriately (see "Safe Transfer Rules" section of the standard).
-        @param _from    Source address
-        @param _to      Target address
-        @param _id      ID of the token type
-        @param _value   Transfer amount
-        @param _data    Additional data with no specified format, MUST be sent unaltered in call to `onERC1155Received` on `_to`
-    */
+    
+    /// @notice postcondition _to != address(0)
+    /// @notice postcondition _operatorApprovals[from][msg.sender] || _from == msg.sender
+    /// @notice postcondition __verifier_old_uint ( balances[_id][_from] ) >= _value    
+    /// @notice postcondition balances[_id][from] == __verifier_old_uint ( balances[_id][_from] ) - _value
+    /// @notice postcondition balances[_id][_to] == __verifier_old_uint ( balances[_id][_to] ) + _value
+    /// @notice emits TransferSingle  
     function safeTransferFrom(address _from, address _to, uint256 _id, uint256 _value, bytes memory _data) public {
 
         require(_to != address(0x0), "safeTransferFrom: _to must be non-zero.");
@@ -87,22 +80,13 @@ contract ERC1155 is IERC1155, ERC165, CommonConstants
         }
     }
 
-    /**
-        @notice Transfers `_values` amount(s) of `_ids` from the `_from` address to the `_to` address specified (with safety call).
-        @dev Caller must be approved to manage the tokens being transferred out of the `_from` account (see "Approval" section of the standard).
-        MUST revert if `_to` is the zero address.
-        MUST revert if length of `_ids` is not the same as length of `_values`.
-        MUST revert if any of the balance(s) of the holder(s) for token(s) in `_ids` is lower than the respective amount(s) in `_values` sent to the recipient.
-        MUST revert on any other error.
-        MUST emit `TransferSingle` or `TransferBatch` event(s) such that all the balance changes are reflected (see "Safe Transfer Rules" section of the standard).
-        Balance changes and events MUST follow the ordering of the arrays (_ids[0]/_values[0] before _ids[1]/_values[1], etc).
-        After the above conditions for the transfer(s) in the batch are met, this function MUST check if `_to` is a smart contract (e.g. code size > 0). If so, it MUST call the relevant `ERC1155TokenReceiver` hook(s) on `_to` and act appropriately (see "Safe Transfer Rules" section of the standard).
-        @param _from    Source address
-        @param _to      Target address
-        @param _ids     IDs of each token type (order and length must match _values array)
-        @param _values  Transfer amounts per token type (order and length must match _ids array)
-        @param _data    Additional data with no specified format, MUST be sent unaltered in call to the `ERC1155TokenReceiver` hook(s) on `_to`
-    */
+    
+    /// @notice postcondition _ids.length == _values.length
+    /// @notice postcondition _to != address(0)
+    /// @notice postcondition operatorApproval[_from][msg.sender] == true || _from == msg.sender
+    /// @notice postcondition forall (uint t) !( 0 <= t &&  t < _ids.length ) || (balances[_ids[t]][_from] <= __verifier_old_uint(balances[_ids[t]][_from]) || _from == _to )
+    /// @notice postcondition forall (uint t) !( 0 <= t &&  t < _ids.length ) || (balances[_ids[t]][_to] >= __verifier_old_uint(balances[_ids[t]][_to]) || _from == _to )
+    /// @notice emits TransferBatch
     function safeBatchTransferFrom(address _from, address _to, uint256[] memory _ids, uint256[] memory _values, bytes memory _data) public {
 
         // MUST Throw on errors
@@ -110,6 +94,11 @@ contract ERC1155 is IERC1155, ERC165, CommonConstants
         require(_ids.length == _values.length, "_ids and _values array lenght must match.");
         require(_from == msg.sender || operatorApproval[_from][msg.sender] == true, "Need operator approval for 3rd party transfers.");
 
+        /// @notice invariant (0 <= i && i <= _ids.length)
+        /// @notice invariant (0 <= i && i <= _values.length)
+        /// @notice invariant forall(uint k)  _ids[k] == __verifier_old_uint(_ids[k])
+        /// @notice invariant forall(uint k)  _values[k] == __verifier_old_uint(_values[k])
+        /// @notice invariant _ids.length == _values.length
         for (uint256 i = 0; i < _ids.length; ++i) {
             uint256 id = _ids[i];
             uint256 value = _values[i];
@@ -141,7 +130,8 @@ contract ERC1155 is IERC1155, ERC165, CommonConstants
         @param _id     ID of the Token
         @return        The _owner's balance of the Token type requested
      */
-    function balanceOf(address _owner, uint256 _id) external view returns (uint256) {
+     ///  @notice postcondition balances[_id][_owner] == balance  
+    function balanceOf(address _owner, uint256 _id) external view returns (uint256 balance) {
         // The balance of any account can be calculated from the Transfer events history.
         // However, since we need to keep the balances to validate transfer request,
         // there is no extra cost to also privide a querry function.
@@ -149,18 +139,22 @@ contract ERC1155 is IERC1155, ERC165, CommonConstants
     }
 
 
-    /**
-        @notice Get the balance of multiple account/token pairs
-        @param _owners The addresses of the token holders
-        @param _ids    ID of the Tokens
-        @return        The _owner's balance of the Token types requested (i.e. balance for each (owner, id) pair)
-     */
-    function balanceOfBatch(address[] calldata _owners, uint256[] calldata _ids) external view returns (uint256[] memory) {
+    
+    /// @notice postcondition batchBalances.length == _owners.length 
+    /// @notice postcondition batchBalances.length == _ids.length
+    /// @notice postcondition forall (uint x) !( 0 <= x &&  x < batchBalances.length ) || batchBalances[x] == balances[_ids[x]][_owners[x]] 
+    function balanceOfBatch(address[] calldata _owners, uint256[] calldata _ids) external view returns (uint256[] memory batchBalances) {
 
         require(_owners.length == _ids.length);
 
         uint256[] memory balances_ = new uint256[](_owners.length);
 
+
+        /// @notice invariant (batchBalances.length == _ids.length && batchBalances.length == _owners.length)
+        /// @notice invariant (0 <= i && i <= _owners.length)
+        /// @notice invariant (0 <= i && i <= _ids.length)
+        /// @notice invariant forall(uint k)  _ids[k] == __verifier_old_uint(_ids[k])
+        /// @notice invariant forall (uint j) !(0 <= j && j < i && j < _owners.length ) || batchBalances[j] == balances[_ids[j]][_owners[j]]
         for (uint256 i = 0; i < _owners.length; ++i) {
             balances_[i] = balances[_ids[i]][_owners[i]];
         }
@@ -168,24 +162,15 @@ contract ERC1155 is IERC1155, ERC165, CommonConstants
         return balances_;
     }
 
-    /**
-        @notice Enable or disable approval for a third party ("operator") to manage all of the caller's tokens.
-        @dev MUST emit the ApprovalForAll event on success.
-        @param _operator  Address to add to the set of authorized operators
-        @param _approved  True if the operator is approved, false to revoke approval
-    */
+    /// @notice  postcondition operatorApproval[msg.sender][operator] ==  approved 
+    /// @notice  emits  ApprovalForAll
     function setApprovalForAll(address _operator, bool _approved) external {
         operatorApproval[msg.sender][_operator] = _approved;
         emit ApprovalForAll(msg.sender, _operator, _approved);
     }
 
-    /**
-        @notice Queries the approval status of an operator for a given owner.
-        @param _owner     The owner of the Tokens
-        @param _operator  Address of authorized operator
-        @return           True if the operator is approved, false if not
-    */
-    function isApprovedForAll(address _owner, address _operator) external view returns (bool) {
+    /// @notice postcondition operatorApproval[_owner][_operator] == approved
+    function isApprovedForAll(address _owner, address _operator) external view returns (bool approved) {
         return operatorApproval[_owner][_operator];
     }
 
