@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity >=0.5.0 <0.9.0;
 
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contracts/utils/Context.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
-import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+// import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+// import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+// import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
+// import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import "./Address.sol";
+import "./Context.sol";
+import "./Strings.sol";
+// import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
 /**
  * @dev Implementation of https://eips.ethereum.org/EIPS/eip-721[ERC721] Non-Fungible Token Standard, including
@@ -20,11 +20,7 @@ import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
  * Does not support burning tokens to address(0).
  */
 contract ERC721A is
-  Context,
-  ERC165,
-  IERC721,
-  IERC721Metadata,
-  IERC721Enumerable
+  Context
 {
   using Address for address;
   using Strings for uint256;
@@ -41,7 +37,7 @@ contract ERC721A is
 
   uint256 private currentIndex = 0;
 
-  uint256 internal immutable maxBatchSize;
+  uint256 internal  maxBatchSize;
 
   // Token name
   string private _name;
@@ -70,7 +66,7 @@ contract ERC721A is
     string memory name_,
     string memory symbol_,
     uint256 maxBatchSize_
-  ) {
+  ) public {
     require(maxBatchSize_ > 0, "ERC721A: max batch size must be nonzero");
     _name = name_;
     _symbol = symbol_;
@@ -125,19 +121,17 @@ contract ERC721A is
   /**
    * @dev See {IERC165-supportsInterface}.
    */
-  function supportsInterface(bytes4 interfaceId)
-    public
-    view
-    virtual
-    (ERC165, IERC165)
-    returns (bool)
-  {
-    return
-      interfaceId == type(IERC721).interfaceId ||
-      interfaceId == type(IERC721Metadata).interfaceId ||
-      interfaceId == type(IERC721Enumerable).interfaceId ||
-      super.supportsInterface(interfaceId);
-  }
+  // function supportsInterface(bytes4 interfaceId)
+  //   public
+  //   view
+  //   returns (bool)
+  // {
+  //   return
+  //     interfaceId == type(IERC721).interfaceId ||
+  //     interfaceId == type(IERC721Metadata).interfaceId ||
+  //     interfaceId == type(IERC721Enumerable).interfaceId ||
+  //     super.supportsInterface(interfaceId);
+  // }
 
   /**
    * @dev See {IERC721-balanceOf}.
@@ -187,14 +181,14 @@ contract ERC721A is
   /**
    * @dev See {IERC721Metadata-name}.
    */
-  function name() public view virtual  returns (string memory) {
+  function name() public view   returns (string memory) {
     return _name;
   }
 
   /**
    * @dev See {IERC721Metadata-symbol}.
    */
-  function symbol() public view virtual  returns (string memory) {
+  function symbol() public view   returns (string memory) {
     return _symbol;
   }
 
@@ -204,7 +198,7 @@ contract ERC721A is
   function tokenURI(uint256 tokenId)
     public
     view
-    virtual
+    
     
     returns (string memory)
   {
@@ -225,7 +219,7 @@ contract ERC721A is
    * token will be the concatenation of the `baseURI` and the `tokenId`. Empty
    * by default, can be n in child contracts.
    */
-  function _baseURI() internal view virtual returns (string memory) {
+  function _baseURI() internal view  returns (string memory) {
     return "";
   }
 
@@ -269,7 +263,7 @@ contract ERC721A is
   function isApprovedForAll(address owner, address operator)
     public
     view
-    virtual
+    
     
     returns (bool)
   {
@@ -487,23 +481,23 @@ contract ERC721A is
     uint256 tokenId,
     bytes memory _data
   ) private returns (bool) {
-    if (to.isContract()) {
-      try
-        IERC721Receiver(to).onERC721Received(_msgSender(), from, tokenId, _data)
-      returns (bytes4 retval) {
-        return retval == IERC721Receiver(to).onERC721Received.selector;
-      } catch (bytes memory reason) {
-        if (reason.length == 0) {
-          revert("ERC721A: transfer to non ERC721Receiver implementer");
-        } else {
-          assembly {
-            revert(add(32, reason), mload(reason))
-          }
-        }
-      }
-    } else {
-      return true;
-    }
+    // if (to.isContract()) {
+    //   try
+    //     IERC721Receiver(to).onERC721Received(_msgSender(), from, tokenId, _data)
+    //   returns (bytes4 retval) {
+    //     return retval == IERC721Receiver(to).onERC721Received.selector;
+    //   } catch (bytes memory reason) {
+    //     if (reason.length == 0) {
+    //       revert("ERC721A: transfer to non ERC721Receiver implementer");
+    //     } else {
+    //       assembly {
+    //         revert(add(32, reason), mload(reason))
+    //       }
+    //     }
+    //   }
+    // } else {
+    //   return true;
+    // }
   }
 
   /**
@@ -523,7 +517,7 @@ contract ERC721A is
     address to,
     uint256 startTokenId,
     uint256 quantity
-  ) internal virtual {}
+  ) internal  {}
 
   /**
    * @dev Hook that is called after a set of serially-ordered token ids have been transferred. This includes
@@ -542,6 +536,12 @@ contract ERC721A is
     address to,
     uint256 startTokenId,
     uint256 quantity
-  ) internal virtual {}
+  ) internal  {}
+
+  event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
+
+    event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
+
+    event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
 }
 
