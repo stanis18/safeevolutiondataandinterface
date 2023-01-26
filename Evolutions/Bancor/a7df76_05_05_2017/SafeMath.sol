@@ -1,11 +1,10 @@
-pragma solidity ^0.4.10;
+pragma solidity >=0.5.0 <0.9.0;
 
 /*
     overflow protected math functions
 */
 contract SafeMath {
-    function SafeMath() {
-    }
+  
 
     function safeAdd(uint256 a, uint256 b) internal returns (uint256) {
         uint c = a + b;

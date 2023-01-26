@@ -9,13 +9,13 @@ contract TokenSalesInterface {
 
   Info saleInfo;
 
-  function claim(address _buyer) returns (bool success);
+  function claim(address _buyer) public returns (bool success);
 
-  function getUsdWei() public constant returns (uint);
+  function getUsdWei() public  returns (uint);
 
-  function totalWeiSold() public constant returns (uint);
+  function totalWeiSold() public  returns (uint);
 
-  function totalUsdSold() public constant returns (uint);
+  function totalUsdSold() public  returns (uint);
 
   event Sold(address indexed _buyer, uint256 indexed _amount, uint256 indexed _weitotal);
 

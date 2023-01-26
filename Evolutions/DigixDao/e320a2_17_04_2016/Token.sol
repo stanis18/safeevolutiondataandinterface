@@ -1,3 +1,5 @@
+pragma solidity >=0.5.0 <0.9.0;
+
 import "./Interfaces.sol";
 
 contract Badge  {
@@ -12,49 +14,49 @@ contract Badge  {
   uint256 public totalSupply;
 
   modifier ifOwner() {
-    if (msg.sender != owner) throw;
-    _
+    if (msg.sender != owner) revert();
+    _;
   }
 
   event Transfer(address indexed _from, address indexed _to, uint256 _value);
   event Mint(address indexed _recipient, uint256 indexed _amount);
   event Approval(address indexed _owner, address indexed _spender, uint256  _value);
 
-  function Badge(address _config) {
+  constructor(address _config) public {
     owner = msg.sender;
   }
 
-  function safeToAdd(uint a, uint b) returns (bool) {
+  function safeToAdd(uint a, uint b) public returns (bool) {
     return (a + b >= a);
   }
 
-  function addSafely(uint a, uint b) returns (uint result) {
+  function addSafely(uint a, uint b) public returns (uint result) {
     if (!safeToAdd(a, b)) {
-      throw;
+      revert();
     } else {
       result = a + b;
       return result;
     }
   }
 
-  function safeToSubtract(uint a, uint b) returns (bool) {
+  function safeToSubtract(uint a, uint b) public returns (bool) {
     return (b <= a);
   }
 
-  function subtractSafely(uint a, uint b) returns (uint) {
-    if (!safeToSubtract(a, b)) throw;
+  function subtractSafely(uint a, uint b) public returns (uint) {
+    if (!safeToSubtract(a, b)) revert();
     return a - b;
   }
 
-  function balanceOf(address _owner) constant returns (uint256 balance) {
+  function balanceOf(address _owner) public returns (uint256 balance) {
     return balances[_owner];
   }
 
-  function transfer(address _to, uint256 _value) returns (bool success) {
+  function transfer(address _to, uint256 _value) public returns (bool success) {
     if (balances[msg.sender] >= _value && _value > 0) {
       balances[msg.sender] = subtractSafely(balances[msg.sender], _value);
       balances[_to] = addSafely(_value, balances[_to]);
-      Transfer(msg.sender, _to, _value);
+      emit Transfer(msg.sender, _to, _value);
       success = true;
     } else {
       success = false;
@@ -62,38 +64,38 @@ contract Badge  {
     return success;
   }
 
-  function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
+  function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
     if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
       balances[_to] = addSafely(balances[_to], _value);
       balances[_from] = subtractSafely(balances[_from], _value);
       allowed[_from][msg.sender] -= _value;
-      Transfer(_from, _to, _value);
+      emit Transfer(_from, _to, _value);
       return true;
     } else {
       return false;
     }
   }
 
-  function approve(address _spender, uint256 _value) returns (bool success) {
+  function approve(address _spender, uint256 _value) public returns (bool success) {
     allowed[msg.sender][_spender] = _value;
-    Approval(msg.sender, _spender, _value);
+    emit Approval(msg.sender, _spender, _value);
     success = true;
     return success;
   }
 
-  function allowance(address _owner, address _spender) constant returns (uint256 remaining) {
+  function allowance(address _owner, address _spender) public returns (uint256 remaining) {
     remaining = allowed[_owner][_spender];
     return remaining;
   }
 
-  function mint(address _owner, uint256 _amount) ifOwner returns (bool success) {
+  function mint(address _owner, uint256 _amount) public ifOwner returns (bool success) {
     totalSupply += _amount;
     balances[_owner] += _amount;
-    Mint(_owner, _amount);
+    emit Mint(_owner, _amount);
     return true;
   }
 
-  function setOwner(address _owner) ifOwner returns (bool success) {
+  function setOwner(address _owner) public ifOwner returns (bool success) {
     owner = _owner;
     return true;
   }
@@ -113,67 +115,67 @@ contract Token {
   mapping (address => mapping (address => uint256)) allowed;
   mapping (address => bool) seller;
 
-  /// @return total amount of tokens
+  
 
   modifier ifSales() {
-    if (!seller[msg.sender]) throw; 
-    _ 
+    if (!seller[msg.sender]) revert(); 
+    _;
   }
 
   modifier ifOwner() {
-    if (msg.sender != owner) throw;
-    _
+    if (msg.sender != owner) revert();
+    _;
   }
 
   modifier ifDao() {
-    if (msg.sender != dao) throw;
-    _
+    if (msg.sender != dao) revert();
+    _;
   }
 
   event Transfer(address indexed _from, address indexed _to, uint256 _value);
   event Mint(address indexed _recipient, uint256 indexed _amount);
   event Approval(address indexed _owner, address indexed _spender, uint256  _value);
 
-  function Token(address _config) {
+  constructor(address _config) public {
     config = _config;
     owner = msg.sender;
-    address _initseller = ConfigInterface(_config).getConfigAddress("sale1:address");
-    seller[_initseller] = true; 
-    badgeLedger = new Badge(_config);
+    // address _initseller = ConfigInterface(_config).getConfigAddress("sale1:address");
+    // seller[_initseller] = true; 
+    // badgeLedger = new Badge(_config);
     locked = false;
   }
 
-  function safeToAdd(uint a, uint b) returns (bool) {
+  function safeToAdd(uint a, uint b) public returns (bool) {
     return (a + b >= a);
   }
 
-  function addSafely(uint a, uint b) returns (uint result) {
+  function addSafely(uint a, uint b) public returns (uint result) {
     if (!safeToAdd(a, b)) {
-      throw;
+      revert();
     } else {
       result = a + b;
       return result;
     }
   }
 
-  function safeToSubtract(uint a, uint b) returns (bool) {
+  function safeToSubtract(uint a, uint b) public returns (bool) {
     return (b <= a);
   }
 
-  function subtractSafely(uint a, uint b) returns (uint) {
-    if (!safeToSubtract(a, b)) throw;
+  function subtractSafely(uint a, uint b) public returns (uint) {
+    if (!safeToSubtract(a, b)) revert();
     return a - b;
   }
 
-  function balanceOf(address _owner) constant returns (uint256 balance) {
+  function balanceOf(address _owner) public returns (uint256 balance) {
     return balances[_owner];
   }
 
-  function transfer(address _to, uint256 _value) returns (bool success) {
+  function transfer(address _to, uint256 _value) public returns (bool success) {
     if (balances[msg.sender] >= _value && _value > 0) {
       balances[msg.sender] -= _value;
       balances[_to] += _value;
-      Transfer(msg.sender, _to, _value);
+      emit Transfer(msg.sender, _to, _value);
       success = true;
     } else {
       success = false;
@@ -181,58 +183,58 @@ contract Token {
     return success;
   }
 
-  function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
+  function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
     if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
       balances[_to] += _value;
       balances[_from] -= _value;
       allowed[_from][msg.sender] -= _value;
-      Transfer(_from, _to, _value);
+      emit Transfer(_from, _to, _value);
       return true;
     } else {
       return false;
     }
   }
 
-  function approve(address _spender, uint256 _value) returns (bool success) {
+  function approve(address _spender, uint256 _value) public returns (bool success) {
     allowed[msg.sender][_spender] = _value;
-    Approval(msg.sender, _spender, _value);
+    emit Approval(msg.sender, _spender, _value);
     success = true;
     return success;
   }
 
-  function allowance(address _owner, address _spender) constant returns (uint256 remaining) {
+  function allowance(address _owner, address _spender) public returns (uint256 remaining) {
     remaining = allowed[_owner][_spender];
     return remaining;
   }
-  function mint(address _owner, uint256 _amount) ifSales returns (bool success) {
+  function mint(address _owner, uint256 _amount) public ifSales returns (bool success) {
     totalSupply = addSafely(_amount, totalSupply);
     balances[_owner] = addSafely(balances[_owner], _amount);
     return true;
   }
 
-  function mintBadge(address _owner, uint256 _amount) ifSales returns (bool success) {
+  function mintBadge(address _owner, uint256 _amount) public ifSales returns (bool success) {
     if (!Badge(badgeLedger).mint(_owner, _amount)) return false;
     return true;
   }
 
-  function registerDao(address _dao) ifOwner returns (bool success) {
+  function registerDao(address _dao) public ifOwner returns (bool success) {
     if (locked == true) return false;
     dao = _dao;
     locked = true;
     return true;
   }
 
-  function registerSeller(address _tokensales) ifDao returns (bool success) {
+  function registerSeller(address _tokensales) public ifDao returns (bool success) {
     seller[_tokensales] = true;
     return true;
   }
 
-  function unregisterSeller(address _tokensales) ifDao returns (bool success) {
+  function unregisterSeller(address _tokensales) public ifDao returns (bool success) {
     seller[_tokensales] = false;
     return true;
   }
 
-  function setOwner(address _newowner) ifDao returns (bool success) {
+  function setOwner(address _newowner) public ifDao returns (bool success) {
     if(Badge(badgeLedger).setOwner(_newowner)) {
       owner = _newowner;
       success = true;
@@ -242,7 +244,7 @@ contract Token {
     return success;
   }
 
-  function setDao(address _newdao) ifDao returns (bool success) {
+  function setDao(address _newdao) public ifDao returns (bool success) {
     dao = _newdao;
   }
 }

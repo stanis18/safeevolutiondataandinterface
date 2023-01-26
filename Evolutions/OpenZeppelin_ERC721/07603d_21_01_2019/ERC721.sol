@@ -8,7 +8,7 @@ import "./Counters.sol";
 import "./ERC165.sol";
 
 
-// _ownedTokensCount[addr] == _ownedTokensCount[addr]._value 
+// forall _ownedTokensCount[addr] == _ownedTokensCount[addr]._value 
 contract ERC721 is ERC165, IERC721 {
     using SafeMath for uint256;
     using Address for address;

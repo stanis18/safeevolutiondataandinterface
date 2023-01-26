@@ -361,10 +361,8 @@ contract ERC721A is IERC721A {
         emit Approval(owner, to, tokenId);
     }
 
-    /**
-     * @dev See {IERC721-getApproved}.
-     */
-    function getApproved(uint256 tokenId) public view  returns (address) {
+    /// @notice postcondition _tokenApprovals[tokenId] == approved
+    function getApproved(uint256 tokenId) public view  returns (address approved) {
         if (!_exists(tokenId)) revert ();
 
         return _tokenApprovals[tokenId];

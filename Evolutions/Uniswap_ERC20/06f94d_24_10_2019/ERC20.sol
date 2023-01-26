@@ -1,6 +1,6 @@
 // TODO meta-approve, review
 // based on https://github.com/makerdao/dss/blob/b1fdcfc9b2ab7961bf2ce7ab4008bfcec1c73a88/src/dai.sol and https://github.com/OpenZeppelin/openzeppelin-contracts/blob/2f9ae975c8bdc5c7f7fa26204896f6c717f07164/contracts/token/ERC20
-pragma solidity 0.5.12;
+pragma solidity >=0.5.0 <0.9.0;
 
 import "../interfaces/IERC20.sol";
 import "../libraries/SafeMath.sol";

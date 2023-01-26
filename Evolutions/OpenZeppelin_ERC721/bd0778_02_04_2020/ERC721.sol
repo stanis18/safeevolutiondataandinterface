@@ -74,7 +74,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumerable 
         return _holderTokens[owner].length();
     }
 
-    // / @notice postcondition _tokenOwner[tokenId]._inner == _owner
+    // / @notice postcondition _tokenOwners[tokenId]._inner == _owner
     // / @notice postcondition  _owner !=  address(0)
     function ownerOf(uint256 tokenId) public view  returns (address _owner) {
         return _tokenOwners.get(tokenId, "ERC721: owner query for nonexistent token");
@@ -165,7 +165,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumerable 
 
     /// @notice  postcondition ( ( _holderTokens[from]._inner._values.length ==  __verifier_old_uint (_holderTokens[from]._inner._values.length ) - 1  &&  from  != to ) || ( from == to )  ) 
     /// @notice  postcondition ( ( _holderTokens[to]._inner._values.length ==  __verifier_old_uint ( _holderTokens[to]._inner._values.length ) + 1  &&  from  != to ) || ( from  == to ) )
-    // / @notice  postcondition  _tokenOwner[tokenId] == to
+    // / @notice  postcondition  _tokenOwner[bytes32(tokenId)] == to
     /// @notice  emits Transfer
      /// @notice  emits Approval
     function transferFrom(address from, address to, uint256 tokenId) public   {

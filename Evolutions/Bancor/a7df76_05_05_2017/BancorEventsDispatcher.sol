@@ -1,4 +1,4 @@
-pragma solidity ^0.4.10;
+pragma solidity >=0.5.0 <0.9.0;
 import './Owned.sol';
 import './BancorEventsInterface.sol';
 
@@ -11,7 +11,7 @@ contract BancorEventsDispatcher is Owned {
     /*
         _events     optional, address of a bancor events contract
     */
-    function BancorEventsDispatcher(address _events) {
+     constructor(address _events) public {
         events = BancorEventsInterface(_events);
     }
 
