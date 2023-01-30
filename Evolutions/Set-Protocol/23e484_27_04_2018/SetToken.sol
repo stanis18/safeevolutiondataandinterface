@@ -1,12 +1,12 @@
-pragma solidity 0.4.23;
+pragma solidity >=0.5.0 <0.9.0;
 pragma experimental ABIEncoderV2;
 
 
-import "zeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
-import "zeppelin-solidity/contracts/token/ERC20/ERC20.sol";
-import "zeppelin-solidity/contracts/token/ERC20/DetailedERC20.sol";
-import "./external/SafeMathUint256.sol";
-import "./lib/Set.sol";
+import "./StandardToken.sol";
+import "./ERC20.sol";
+import "./DetailedERC20.sol";
+import "./SafeMathUint256.sol";
+import "./Set.sol";
 
 
 /**
@@ -14,7 +14,7 @@ import "./lib/Set.sol";
  * @author Felix Feng
  * @dev Implementation of the basic {Set} token.
  */
-contract SetToken is StandardToken, DetailedERC20("", "", 18), Set {
+contract SetToken is StandardToken, DetailedERC20, Set {
   using SafeMathUint256 for uint256;
 
   ///////////////////////////////////////////////////////////
@@ -86,7 +86,7 @@ contract SetToken is StandardToken, DetailedERC20("", "", 18), Set {
    * @param _components address[] A list of component address which you want to include
    * @param _units uint[] A list of quantities in gWei of each component (corresponds to the {Set} of _components)
    */
-  constructor(address[] _components, uint[] _units, uint _naturalUnit) public {
+  constructor(address[] memory _components, uint[] memory _units, uint _naturalUnit) public {
     // There must be component present
     require(_components.length > 0, "Component length needs to be great than 0");
 
@@ -124,7 +124,7 @@ contract SetToken is StandardToken, DetailedERC20("", "", 18), Set {
   }
 
   // Prevent Ether from being sent to the contract
-  function () payable {
+  function () payable external {
     revert();
   }
 
@@ -153,7 +153,7 @@ contract SetToken is StandardToken, DetailedERC20("", "", 18), Set {
 
       uint transferValue = calculateTransferValue(currentUnits, quantity);
 
-      assert(ERC20(currentComponent).transferFrom(msg.sender, this, transferValue));
+      assert(ERC20(currentComponent).transferFrom(msg.sender, address(this), transferValue));
     }
 
     mint(quantity);
@@ -204,7 +204,7 @@ contract SetToken is StandardToken, DetailedERC20("", "", 18), Set {
    * @param quantity uint The quantity of Sets desired to redeem in Wei
    * @param excludedComponents address[] The list of tokens to exclude
    */
-  function partialRedeem(uint quantity, address[] excludedComponents)
+  function partialRedeem(uint quantity, address[] memory excludedComponents)
     public
     isMultipleOfNaturalUnit(quantity)
     isNonZero(quantity)
@@ -276,7 +276,7 @@ contract SetToken is StandardToken, DetailedERC20("", "", 18), Set {
    * @param componentsToRedeem address[] The list of tokens to redeem
    * @param quantities uint[] The quantity of Sets desired to redeem in Wei
    */
-  function redeemExcluded(address[] componentsToRedeem, uint[] quantities)
+  function redeemExcluded(address[] memory componentsToRedeem, uint[] memory quantities)
     public
     returns (bool success)
   {
@@ -311,7 +311,7 @@ contract SetToken is StandardToken, DetailedERC20("", "", 18), Set {
     return components.length;
   }
 
-  function getComponents() public view returns(address[]) {
+  function getComponents() public view returns(address[] memory) {
     address[] memory componentAddresses = new address[](components.length);
     for (uint i = 0; i < components.length; i++) {
         componentAddresses[i] = components[i].address_;
@@ -319,7 +319,7 @@ contract SetToken is StandardToken, DetailedERC20("", "", 18), Set {
     return componentAddresses;
   }
 
-  function getUnits() public view returns(uint[]) {
+  function getUnits() public view returns(uint[] memory) {
     uint[] memory units = new uint[](components.length);
     for (uint i = 0; i < components.length; i++) {
         units[i] = components[i].unit_;

@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity >=0.5.0 <0.9.0;
+pragma experimental ABIEncoderV2;
 
-import "./draft-ERC20Permit.sol";
-import "./IERC20Votes.sol";
-import "../../../utils/math/Math.sol";
-import "../../../utils/math/SafeCast.sol";
-import "../../../utils/cryptography/ECDSA.sol";
+import "./Math.sol";
+import "./SafeCast.sol";
+import "./ECDSA.sol";
 
 /**
  * @dev Extension of the ERC20 token contract to support Compound's voting and delegation.
@@ -22,7 +21,18 @@ import "../../../utils/cryptography/ECDSA.sol";
  *
  * _Available since v4.2._
  */
-abstract contract ERC20Votes is IERC20Votes, ERC20Permit {
+contract ERC20Votes  {
+
+
+    struct Checkpoint {
+        uint32  fromBlock;
+        uint224 votes;
+    }
+
+    event DelegateChanged(address indexed delegator, address indexed fromDelegate, address indexed toDelegate);
+    event DelegateVotesChanged(address indexed delegate, uint256 previousBalance, uint256 newBalance);
+
+
     bytes32 private constant _DELEGATION_TYPEHASH = keccak256("Delegation(address delegatee,uint256 nonce,uint256 expiry)");
 
     mapping (address => address) private _delegates;
@@ -32,21 +42,21 @@ abstract contract ERC20Votes is IERC20Votes, ERC20Permit {
     /**
      * @dev Get the `pos`-th checkpoint for `account`.
      */
-    function checkpoints(address account, uint32 pos) external view virtual  returns (Checkpoint memory) {
+    function checkpoints(address account, uint32 pos) external view   returns (Checkpoint memory) {
         return _checkpoints[account][pos];
     }
 
-    /**
-     * @dev Get number of checkpoints for `account`.
-     */
-    function numCheckpoints(address account) external view virtual  returns (uint32) {
+    // /**
+    //  * @dev Get number of checkpoints for `account`.
+    //  */
+    function numCheckpoints(address account) external view   returns (uint32) {
         return SafeCast.toUint32(_checkpoints[account].length);
     }
 
-    /**
-     * @dev Get the address `account` is currently delegating to.
-     */
-    function delegates(address account) public view virtual  returns (address) {
+    // /**
+    //  * @dev Get the address `account` is currently delegating to.
+    //  */
+    function delegates(address account) public view   returns (address) {
         return _delegates[account];
     }
 
@@ -58,26 +68,26 @@ abstract contract ERC20Votes is IERC20Votes, ERC20Permit {
         return pos == 0 ? 0 : _checkpoints[account][pos - 1].votes;
     }
 
-    /**
-     * @dev Determine the number of votes for `account` at the begining of `blockNumber`.
-     */
+    // /**
+    //  * @dev Determine the number of votes for `account` at the begining of `blockNumber`.
+    //  */
     function getPriorVotes(address account, uint256 blockNumber) external view  returns (uint256) {
         require(blockNumber < block.number, "ERC20Votes::getPriorVotes: not yet determined");
         return _checkpointsLookup(_checkpoints[account], blockNumber);
     }
 
-    /**
-     * @dev Determine the totalSupply at the begining of `blockNumber`. Note, this value is the sum of all balances.
-     * It is but NOT the sum of all the delegated votes!
-     */
+    // /**
+    //  * @dev Determine the totalSupply at the begining of `blockNumber`. Note, this value is the sum of all balances.
+    //  * It is but NOT the sum of all the delegated votes!
+    //  */
     function getPriorTotalSupply(uint256 blockNumber) external view  returns(uint256) {
         require(blockNumber < block.number, "ERC20Votes::getPriorTotalSupply: not yet determined");
         return _checkpointsLookup(_totalSupplyCheckpoints, blockNumber);
     }
 
-    /**
-     * @dev Lookup a value in a list of (sorted) checkpoints.
-     */
+    // /**
+    //  * @dev Lookup a value in a list of (sorted) checkpoints.
+    //  */
     function _checkpointsLookup(Checkpoint[] storage ckpts, uint256 blockNumber) private view returns (uint256) {
         // We run a binary search to look for the earliest checkpoint taken after `blockNumber`.
         //
@@ -104,18 +114,18 @@ abstract contract ERC20Votes is IERC20Votes, ERC20Permit {
         return high == 0 ? 0 : ckpts[high - 1].votes;
     }
 
-    /**
-     * @dev Delegate votes from the sender to `delegatee`.
-     */
-    function delegate(address delegatee) public virtual  {
+    // /**
+    //  * @dev Delegate votes from the sender to `delegatee`.
+    //  */
+    function delegate(address delegatee) public   {
         return _delegate(_msgSender(), delegatee);
     }
 
-    /**
-     * @dev Delegates votes from signer to `delegatee`
-     */
+    // /**
+    //  * @dev Delegates votes from signer to `delegatee`
+    //  */
     function delegateBySig(address delegatee, uint256 nonce, uint256 expiry, uint8 v, bytes32 r, bytes32 s)
-        public virtual 
+        public  
     {
         require(block.timestamp <= expiry, "ERC20Votes::delegateBySig: signature expired");
         address signer = ECDSA.recover(
@@ -131,36 +141,36 @@ abstract contract ERC20Votes is IERC20Votes, ERC20Permit {
         return _delegate(signer, delegatee);
     }
 
-    /**
-     * @dev snapshot the totalSupply after it has been increassed.
-     */
-    function _mint(address account, uint256 amount) internal virtual  {
+    // /**
+    //  * @dev snapshot the totalSupply after it has been increassed.
+    //  */
+    function _mint(address account, uint256 amount) internal   {
         super._mint(account, amount);
-        require(totalSupply() <= type(uint224).max, "ERC20Votes: total supply exceeds 2**224");
+        // require(totalSupply() <= type(uint224).max, "ERC20Votes: total supply exceeds 2**224");
 
         _writeCheckpoint(_totalSupplyCheckpoints, add, amount);
     }
 
-    /**
-     * @dev snapshot the totalSupply after it has been decreased.
-     */
-    function _burn(address account, uint256 amount) internal virtual  {
+    // /**
+    //  * @dev snapshot the totalSupply after it has been decreased.
+    //  */
+    function _burn(address account, uint256 amount) internal   {
         super._burn(account, amount);
 
         _writeCheckpoint(_totalSupplyCheckpoints, subtract, amount);
     }
 
-    /**
-     * @dev move voting power when tokens are transferred.
-     */
-    function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual  {
+    // /**
+    //  * @dev move voting power when tokens are transferred.
+    //  */
+    function _beforeTokenTransfer(address from, address to, uint256 amount) internal   {
         _moveVotingPower(delegates(from), delegates(to), amount);
     }
 
-    /**
-     * @dev Change delegation for `delegator` to `delegatee`.
-     */
-    function _delegate(address delegator, address delegatee) internal virtual {
+    // /**
+    //  * @dev Change delegation for `delegator` to `delegatee`.
+    //  */
+    function _delegate(address delegator, address delegatee) internal  {
         address currentDelegate = delegates(delegator);
         uint256 delegatorBalance = balanceOf(delegator);
         _delegates[delegator] = delegatee;

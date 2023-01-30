@@ -14,15 +14,15 @@
     limitations under the License.
 */
 
-pragma solidity 0.4.24;
+pragma solidity >=0.5.0 <0.9.0;
 pragma experimental "ABIEncoderV2";
 
 
-import { DetailedERC20 } from "zeppelin-solidity/contracts/token/ERC20/DetailedERC20.sol";
-import { ERC20 } from "zeppelin-solidity/contracts/token/ERC20/ERC20.sol";
-import { StandardToken } from "zeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
-import { SafeMath } from "zeppelin-solidity/contracts/math/SafeMath.sol";
-import "../lib/AddressArrayUtils.sol";
+import { DetailedERC20 } from "./DetailedERC20.sol";
+import { ERC20 } from "./ERC20.sol";
+import { StandardToken } from "./StandardToken.sol";
+import { SafeMath } from "./SafeMath.sol";
+import "./AddressArrayUtils.sol";
 
 
 /**

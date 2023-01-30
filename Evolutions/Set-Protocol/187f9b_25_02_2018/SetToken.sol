@@ -1,11 +1,11 @@
-pragma solidity 0.4.18;
+pragma solidity >=0.5.0 <0.9.0;
 
 
-import "zeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
-import "zeppelin-solidity/contracts/token/ERC20/ERC20.sol";
-import "zeppelin-solidity/contracts/token/ERC20/DetailedERC20.sol";
-import "zeppelin-solidity/contracts/math/SafeMath.sol";
-import "./lib/Set.sol";
+import "./StandardToken.sol";
+import "./ERC20.sol";
+import "./DetailedERC20.sol";
+import "./SafeMath.sol";
+import "./Set.sol";
 
 
 /**
@@ -13,8 +13,8 @@ import "./lib/Set.sol";
  * @author Felix Feng
  * @dev Implementation of the basic {Set} token.
  */
-contract SetToken is StandardToken, DetailedERC20("", "", 18), Set {
-  uint256 public totalSupply;
+contract SetToken is StandardToken, DetailedERC20, Set {
+  // uint256 public totalSupply;
 
   address[] public tokens;
   uint[] public units;
@@ -24,7 +24,7 @@ contract SetToken is StandardToken, DetailedERC20("", "", 18), Set {
    * @param _tokens address[] A list of token address which you want to include
    * @param _units uint[] A list of quantities of each token (corresponds to the {Set} of _tokens)
    */
-  function SetToken(address[] _tokens, uint[] _units, string _name, string _symbol) public {
+  constructor (address[] memory _tokens, uint[] memory _units, string memory _name, string memory _symbol) public {
     // There must be tokens present
     require(_tokens.length > 0);
 
@@ -71,16 +71,16 @@ contract SetToken is StandardToken, DetailedERC20("", "", 18), Set {
       uint currentUnits = units[i];
 
       // The transaction will fail if any of the tokens fail to transfer
-      assert(ERC20(currentToken).transferFrom(msg.sender, this, currentUnits * quantity));
+      assert(ERC20(currentToken).transferFrom(msg.sender, address(this), currentUnits * quantity));
     }
 
     // If successful, increment the balance of the user’s {Set} token
     balances[msg.sender] = SafeMath.add(balances[msg.sender], quantity);
 
     // Increment the total token supply
-    totalSupply = SafeMath.add(totalSupply, quantity);
+    totalSupply_ = SafeMath.add(totalSupply_, quantity);
 
-    LogIssuance(msg.sender, quantity);
+    emit LogIssuance(msg.sender, quantity);
 
     return true;
   }
@@ -100,7 +100,7 @@ contract SetToken is StandardToken, DetailedERC20("", "", 18), Set {
     balances[msg.sender] = SafeMath.sub(balances[msg.sender], quantity);
 
     // Decrement the total token supply
-    totalSupply = SafeMath.sub(totalSupply, quantity);
+    totalSupply_ = SafeMath.sub(totalSupply_, quantity);
 
     for (uint i = 0; i < tokens.length; i++) {
       address currentToken = tokens[i];
@@ -110,7 +110,7 @@ contract SetToken is StandardToken, DetailedERC20("", "", 18), Set {
       assert(ERC20(currentToken).transfer(msg.sender, currentUnits * quantity));
     }
 
-    LogRedemption(msg.sender, quantity);
+    emit LogRedemption(msg.sender, quantity);
 
     return true;
   }
@@ -119,11 +119,11 @@ contract SetToken is StandardToken, DetailedERC20("", "", 18), Set {
     return tokens.length;
   }
 
-  function getTokens() public view returns(address[]) {
+  function getTokens() public view returns(address[] memory) {
     return tokens;
   }
 
-  function getUnits() public view returns(uint[]) {
+  function getUnits() public view returns(uint[] memory) {
     return units;
   }
 }

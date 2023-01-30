@@ -52,7 +52,8 @@ contract Refinement {
     function balanceOf_pre(address owner) public view returns (uint256) {
     }
     
-    /// @notice precondition  od._ownedTokensCount[owner]._value == nw._balances[owner] && od._ownedTokensCount[owner]._value == _balance_
+    /// @notice precondition forall (address addr) od._ownedTokensCount[addr]._value == nw._balances[addr] 
+    /// @notice precondition od._ownedTokensCount[owner]._value == _balance_
     /// @notice postcondition nw._balances[owner] == _balance_
     function balanceOf_post(address owner, uint256 _balance_) public view returns (uint256) {
     }
