@@ -14,7 +14,8 @@
     limitations under the License.
 */
 
-pragma solidity 0.4.24;
+pragma solidity >=0.5.0 <0.9.0;
+
 
 
 /**
@@ -24,21 +25,24 @@ pragma solidity 0.4.24;
  * The ICoreIssuance Contract defines all the functions exposed in the CoreIssuance
  * extension.
  */
-contract ICoreIssuance {
+contract ICoreAccounting {
 
     /* ============ Internal Functions ============ */
 
     /**
-     * Exchanges components for Set Tokens, accepting any owner
+     * Deposit multiple tokens to the vault. Quantities should be in the
+     * order of the addresses of the tokens being deposited.
      *
-     * @param  _owner        Address to issue set to
-     * @param  _set          Address of set to issue
-     * @param  _quantity     Quantity of set to issue
+     * @param  _from            Address depositing tokens
+     * @param  _to              Address to credit for deposits
+     * @param  _tokens          Addresses of tokens being deposited
+     * @param  _quantities      The quantities of tokens to deposit
      */
-    function issueInternal(
-        address _owner,
-        address _set,
-        uint _quantity
+    function batchDepositInternal(
+        address _from,
+        address _to,
+        address[] _tokens,
+        uint[] _quantities
     )
         internal;
 }

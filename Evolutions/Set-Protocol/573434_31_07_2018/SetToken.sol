@@ -14,13 +14,13 @@
     limitations under the License.
 */
 
-pragma solidity 0.4.24;
+pragma solidity >=0.5.0 <0.9.0;
 
 
-import { DetailedERC20 } from "zeppelin-solidity/contracts/token/ERC20/DetailedERC20.sol";
-import { SafeMath } from "zeppelin-solidity/contracts/math/SafeMath.sol";
-import { StandardToken } from "zeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
-import { ISetFactory } from "./interfaces/ISetFactory.sol";
+import { DetailedERC20 } from "./DetailedERC20.sol";
+import { SafeMath } from "./SafeMath.sol";
+import { StandardToken } from "./StandardToken.sol";
+import { ISetFactory } from "./ISetFactory.sol";
 
 
 /**
@@ -55,84 +55,73 @@ contract SetToken is
 
     /* ============ Constructor ============ */
 
-    /**
-     * Constructor function for {Set} token
-     *
-     * As looping operations are expensive, checking for duplicates will be on the onus of the application developer
-     *
-     * @param _factory          A list of component address which you want to include
-     * @param _components       A list of component address which you want to include
-     * @param _units            A list of quantities in gWei of each component (corresponds to the {Set} of _components)
-     * @param _naturalUnit      The minimum multiple of Sets that can be issued or redeeemed
-     * @param _name             The Set's name
-     * @param _symbol           The Set's symbol
-     */
-    constructor(
-        address _factory,
-        address[] _components,
-        uint[] _units,
-        uint _naturalUnit,
-        string _name,
-        string _symbol
-    )
-        public
-        DetailedERC20(_name, _symbol, 18)
-    {
-        // Require naturalUnit passed is greater than 0
-        require(_naturalUnit > 0);
+    
+    // constructor(
+    //     address _factory,
+    //     address[]  _components,
+    //     uint[] _units,
+    //     uint _naturalUnit,
+    //     string _name,
+    //     string _symbol
+    // )
+    //     public
+    //     DetailedERC20(_name, _symbol, 18)
+    // {
+    //     // Require naturalUnit passed is greater than 0
+    //     require(_naturalUnit > 0);
 
-        // Confirm an empty _components array is not passed
-        require(_components.length > 0);
+    //     // Confirm an empty _components array is not passed
+    //     require(_components.length > 0);
 
-        // Confirm an empty _quantities array is not passed
-        require(_units.length > 0);
+    //     // Confirm an empty _quantities array is not passed
+    //     require(_units.length > 0);
 
-        // Confirm there is one quantity for every token address
-        require(_components.length == _units.length);
+    //     // Confirm there is one quantity for every token address
+    //     require(_components.length == _units.length);
 
-        // NOTE: It will be the onus of developers to check whether the addressExists
-        // are in fact ERC20 addresses
-        uint8 minDecimals = 18;
-        uint8 currentDecimals;
-        for (uint16 i = 0; i < _units.length; i++) {
-            // Check that all units are non-zero. Negative numbers will underflow
-            uint currentUnits = _units[i];
-            require(currentUnits > 0);
+    //     // NOTE: It will be the onus of developers to check whether the addressExists
+    //     // are in fact ERC20 addresses
+    //     uint8 minDecimals = 18;
+    //     uint8 currentDecimals;
+    //     for (uint16 i = 0; i < _units.length; i++) {
+    //         // Check that all units are non-zero. Negative numbers will underflow
+    //         uint currentUnits = _units[i];
+    //         require(currentUnits > 0);
 
-            // Check that all addresses are non-zero
-            address currentComponent = _components[i];
-            require(currentComponent != address(0));
+    //         // Check that all addresses are non-zero
+    //         address currentComponent = _components[i];
+    //         require(currentComponent != address(0));
 
-            // Figure out which of the components has the minimum decimal value
-            /* solium-disable-next-line security/no-low-level-calls */
-            if (currentComponent.call(bytes4(keccak256("decimals()")))) {
-                currentDecimals = DetailedERC20(currentComponent).decimals();
-                minDecimals = currentDecimals < minDecimals ? currentDecimals : minDecimals;
-            } else {
-                // If one of the components does not implement decimals, we assume the worst
-                // and set minDecimals to 0
-                minDecimals = 0;
-            }
+    //         // Figure out which of the components has the minimum decimal value
+    //         /* solium-disable-next-line security/no-low-level-calls */
+    //         if (currentComponent.call(bytes4(keccak256("decimals()")))) {
+    //             currentDecimals = DetailedERC20(currentComponent).decimals();
+    //             minDecimals = currentDecimals < minDecimals ? currentDecimals : minDecimals;
+    //         } else {
+    //             // If one of the components does not implement decimals, we assume the worst
+    //             // and set minDecimals to 0
+    //             minDecimals = 0;
+    //         }
 
-            // Check the component has not already been added
-            require(!tokenIsComponent(currentComponent));
+    //         // Check the component has not already been added
+    //         require(!tokenIsComponent(currentComponent));
 
-            // add component to isComponent mapping
-            isComponent[keccak256(abi.encodePacked(currentComponent))] = true;
+    //         // add component to isComponent mapping
+    //         isComponent[keccak256(abi.encodePacked(currentComponent))] = true;
 
-            // Add component data to components struct array
-            components.push(Component({
-                address_: currentComponent,
-                unit_: currentUnits
-            }));
-        }
+    //         // Add component data to components struct array
+    //         components.push(Component({
+    //             address_: currentComponent,
+    //             unit_: currentUnits
+    //         }));
+    //     }
 
-        // This is the minimum natural unit possible for a Set with these components.
-        require(_naturalUnit >= uint(10) ** (18 - minDecimals));
+    //     // This is the minimum natural unit possible for a Set with these components.
+    //     require(_naturalUnit >= uint(10) ** (18 - minDecimals));
 
-        factory = _factory;
-        naturalUnit = _naturalUnit;
-    }
+    //     factory = _factory;
+    //     naturalUnit = _naturalUnit;
+    // }
 
     /* ============ Public Functions ============ */
 
@@ -196,7 +185,7 @@ contract SetToken is
     function getComponents()
         public
         view
-        returns(address[])
+        returns(address[] memory)
     {
         address[] memory componentAddresses = new address[](components.length);
 
@@ -215,7 +204,7 @@ contract SetToken is
     function getUnits()
         public
         view
-        returns(uint[])
+        returns(uint[] memory)
     {
         uint[] memory units = new uint[](components.length);
 

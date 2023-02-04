@@ -14,7 +14,8 @@
     limitations under the License.
 */
 
-pragma solidity 0.4.24;
+pragma solidity >=0.5.0 <0.9.0;
+
 
 
 /**
@@ -45,13 +46,13 @@ interface ISetFactory {
      * @param  _symbol               The symbol of the new Set
      * @return setTokenAddress       The address of the new Set
      */
-    function create(
-        address[] _components,
-        uint[] _units,
-        uint _naturalUnit,
-        string _name,
-        string _symbol
-    )
-        external
-        returns (address);
+    // function create(
+    //     address[] memory _components,
+    //     uint[] memory _units,
+    //     uint _naturalUnit,
+    //     string memory _name,
+    //     string memory _symbol
+    // )
+    //     external
+    //     returns (address);
 }

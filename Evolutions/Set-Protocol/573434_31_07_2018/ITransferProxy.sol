@@ -14,7 +14,8 @@
     limitations under the License.
 */
 
-pragma solidity 0.4.24;
+pragma solidity >=0.5.0 <0.9.0;
+
 
 /**
  * @title ITransferProxy
