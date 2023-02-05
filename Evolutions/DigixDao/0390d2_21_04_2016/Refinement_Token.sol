@@ -1,13 +1,5 @@
 pragma solidity >=0.5.0 <0.9.0;
 
-// Abstract function: 
-// nw.balances -> od.balances
-// nw.allowed -> od.allowed
-// nw.seller -> od.seller
-// nw.config -> od.config 
-// nw.owner -> od.owner
-// nw.totalSupply -> od.totalSupply
-// nw.totalBadges -> od.totalBadges
 
 
 contract Refinement {
@@ -20,25 +12,26 @@ contract Refinement {
   }
 
     struct StateOld {
-        mapping (address => User) users;
         mapping (address => uint256) balances;
         mapping (address => mapping (address => uint256)) allowed;
         mapping (address => bool) seller;
         address config;
         address owner;
+        address dao;
+        bool locked;
         uint256  totalSupply;
-        uint256  totalBadges;
     }
 
     struct StateNew {
-        mapping (address => User) users;
+
         mapping (address => uint256) balances;
         mapping (address => mapping (address => uint256)) allowed;
         mapping (address => bool) seller;
         address config;
         address owner;
+        address dao;
+        bool locked;
         uint256  totalSupply;
-        uint256  totalBadges;
     }
     
     StateOld od;
