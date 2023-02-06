@@ -14,13 +14,13 @@
     limitations under the License.
 */
 
-pragma solidity 0.4.24;
+pragma solidity >=0.5.0 <0.9.0;
 
 
-import { DetailedERC20 } from "zeppelin-solidity/contracts/token/ERC20/DetailedERC20.sol";
-import { SafeMath } from "zeppelin-solidity/contracts/math/SafeMath.sol";
-import { StandardToken } from "zeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
-import { ISetFactory } from "./interfaces/ISetFactory.sol";
+import { DetailedERC20 } from "./DetailedERC20.sol";
+import { SafeMath } from "./SafeMath.sol";
+import { StandardToken } from "./StandardToken.sol";
+import { ISetFactory } from "./ISetFactory.sol";
 
 
 /**
@@ -39,23 +39,89 @@ contract SetToken is
 
     struct Component {
         address address_;
-        uint256 unit_;
+        uint unit_;
     }
 
     /* ============ State Variables ============ */
 
-    uint256 public naturalUnit;
+    uint public naturalUnit;
     Component[] public components;
 
     // Mapping of componentHash to isComponent
-    mapping(address => bool) internal isComponent;
+    mapping(bytes32 => bool) internal isComponent;
 
     // Address of the Factory contract that created the SetToken
     address public factory;
 
     /* ============ Constructor ============ */
 
-   
+    
+    // constructor(
+    //     address _factory,
+    //     address[]  _components,
+    //     uint[] _units,
+    //     uint _naturalUnit,
+    //     string _name,
+    //     string _symbol
+    // )
+    //     public
+    //     DetailedERC20(_name, _symbol, 18)
+    // {
+    //     // Require naturalUnit passed is greater than 0
+    //     require(_naturalUnit > 0);
+
+    //     // Confirm an empty _components array is not passed
+    //     require(_components.length > 0);
+
+    //     // Confirm an empty _quantities array is not passed
+    //     require(_units.length > 0);
+
+    //     // Confirm there is one quantity for every token address
+    //     require(_components.length == _units.length);
+
+    //     // NOTE: It will be the onus of developers to check whether the addressExists
+    //     // are in fact ERC20 addresses
+    //     uint8 minDecimals = 18;
+    //     uint8 currentDecimals;
+    //     for (uint16 i = 0; i < _units.length; i++) {
+    //         // Check that all units are non-zero. Negative numbers will underflow
+    //         uint currentUnits = _units[i];
+    //         require(currentUnits > 0);
+
+    //         // Check that all addresses are non-zero
+    //         address currentComponent = _components[i];
+    //         require(currentComponent != address(0));
+
+    //         // Figure out which of the components has the minimum decimal value
+    //         /* solium-disable-next-line security/no-low-level-calls */
+    //         if (currentComponent.call(bytes4(keccak256("decimals()")))) {
+    //             currentDecimals = DetailedERC20(currentComponent).decimals();
+    //             minDecimals = currentDecimals < minDecimals ? currentDecimals : minDecimals;
+    //         } else {
+    //             // If one of the components does not implement decimals, we assume the worst
+    //             // and set minDecimals to 0
+    //             minDecimals = 0;
+    //         }
+
+    //         // Check the component has not already been added
+    //         require(!tokenIsComponent(currentComponent));
+
+    //         // add component to isComponent mapping
+    //         isComponent[keccak256(abi.encodePacked(currentComponent))] = true;
+
+    //         // Add component data to components struct array
+    //         components.push(Component({
+    //             address_: currentComponent,
+    //             unit_: currentUnits
+    //         }));
+    //     }
+
+    //     // This is the minimum natural unit possible for a Set with these components.
+    //     require(_naturalUnit >= uint(10) ** (18 - minDecimals));
+
+    //     factory = _factory;
+    //     naturalUnit = _naturalUnit;
+    // }
 
     /* ============ Public Functions ============ */
 
@@ -68,7 +134,7 @@ contract SetToken is
      */
     function mint(
         address _issuer,
-        uint256 _quantity
+        uint _quantity
     )
         external
     {
@@ -80,9 +146,6 @@ contract SetToken is
 
         // Update the total supply of the set token
         totalSupply_ = totalSupply_.add(_quantity);
-
-        // Emit a transfer log with from address being 0 to indicate mint
-        emit Transfer(address(0), _issuer, _quantity);
     }
 
     /*
@@ -94,7 +157,7 @@ contract SetToken is
      */
     function burn(
         address _from,
-        uint256 _quantity
+        uint _quantity
     )
         external
     {
@@ -122,12 +185,12 @@ contract SetToken is
     function getComponents()
         public
         view
-        returns(address[])
+        returns(address[] memory)
     {
         address[] memory componentAddresses = new address[](components.length);
 
         // Iterate through components and get address of each component
-        for (uint256 i = 0; i < components.length; i++) {
+        for (uint16 i = 0; i < components.length; i++) {
             componentAddresses[i] = components[i].address_;
         }
         return componentAddresses;
@@ -141,34 +204,18 @@ contract SetToken is
     function getUnits()
         public
         view
-        returns(uint256[])
+        returns(uint[] memory)
     {
-        uint256[] memory units = new uint256[](components.length);
+        uint[] memory units = new uint[](components.length);
 
         // Iterate through components and get units of each component
-        for (uint256 i = 0; i < components.length; i++) {
+        for (uint16 i = 0; i < components.length; i++) {
             units[i] = components[i].unit_;
         }
         return units;
     }
 
-    /*
-     * Checks to make sure token is component of Set
-     *
-     * @param  _tokenAddress     Address of token being checked
-     * @return  bool             True if token is component of Set
-     */
-    function tokenIsComponent(
-        address _tokenAddress
-    )
-        view
-        public
-        returns (bool)
-    {
-        return isComponent[_tokenAddress];
-    }
-
-    /* ============ Transfer Overrides ============ */
+    /* ============ Transfer s ============ */
 
     /*
      * ERC20 like transfer function but checks destination is valid
@@ -216,5 +263,23 @@ contract SetToken is
 
         // Use inherited transferFrom function
         return super.transferFrom(_from, _to, _value);
+    }
+
+    /* ============ Internal Functions ============ */
+
+    /*
+     * Checks to make sure token is component of Set
+     *
+     * @param  _tokenAddress     Address of token being checked
+     * @return  bool             True if token is component of Set
+     */
+    function tokenIsComponent(
+        address _tokenAddress
+    )
+        view
+        internal
+        returns (bool)
+    {
+        return isComponent[keccak256(abi.encodePacked(_tokenAddress))];
     }
 }

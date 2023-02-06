@@ -14,14 +14,14 @@
     limitations under the License.
 */
 
-pragma solidity 0.4.24;
+pragma solidity >=0.5.0 <0.9.0;
 
 
-import { ERC20Detailed } from "openzeppelin-solidity/contracts/token/ERC20/ERC20Detailed.sol";
-import { SafeMath } from "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import { ERC20 } from "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
-import { ISetFactory } from "./interfaces/ISetFactory.sol";
-import { Bytes32 } from "../lib/Bytes32.sol";
+import { ERC20Detailed } from "./ERC20Detailed.sol";
+import { SafeMath } from "./SafeMath.sol";
+import { ERC20 } from "./ERC20.sol";
+import { ISetFactory } from "./ISetFactory.sol";
+
 
 
 /**
@@ -35,7 +35,7 @@ contract SetToken is
     ERC20Detailed
 {
     using SafeMath for uint256;
-    using Bytes32 for bytes32;
+    
 
     /* ============ State Variables ============ */
 

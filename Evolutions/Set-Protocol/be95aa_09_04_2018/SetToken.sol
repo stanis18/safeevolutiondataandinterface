@@ -14,13 +14,13 @@
     limitations under the License.
 */
 
-pragma solidity 0.4.24;
+pragma solidity >=0.5.0 <0.9.0;
 
 
-import { DetailedERC20 } from "zeppelin-solidity/contracts/token/ERC20/DetailedERC20.sol";
-import { SafeMath } from "zeppelin-solidity/contracts/math/SafeMath.sol";
-import { StandardToken } from "zeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
-import { ISetFactory } from "./interfaces/ISetFactory.sol";
+import { DetailedERC20 } from "./DetailedERC20.sol";
+import { SafeMath } from "./SafeMath.sol";
+import { StandardToken } from "./StandardToken.sol";
+import { ISetFactory } from "./ISetFactory.sol";
 
 
 /**
@@ -69,14 +69,14 @@ contract SetToken is
      */
     constructor(
         address _factory,
-        address[] _components,
-        uint256[] _units,
+        address[] memory _components,
+        uint256[] memory _units,
         uint256 _naturalUnit,
-        string _name,
-        string _symbol
+        string memory _name,
+        string memory _symbol
     )
         public
-        DetailedERC20(_name, _symbol, 18)
+      
     {
         // Require naturalUnit passed is greater than 0
         require(_naturalUnit > 0);
@@ -105,14 +105,14 @@ contract SetToken is
 
             // Figure out which of the components has the minimum decimal value
             /* solium-disable-next-line security/no-low-level-calls */
-            if (currentComponent.call(bytes4(keccak256("decimals()")))) {
-                currentDecimals = DetailedERC20(currentComponent).decimals();
-                minDecimals = currentDecimals < minDecimals ? currentDecimals : minDecimals;
-            } else {
-                // If one of the components does not implement decimals, we assume the worst
-                // and set minDecimals to 0
-                minDecimals = 0;
-            }
+            // if (currentComponent.call(bytes4(keccak256("decimals()")))) {
+            //     currentDecimals = DetailedERC20(currentComponent).decimals();
+            //     minDecimals = currentDecimals < minDecimals ? currentDecimals : minDecimals;
+            // } else {
+            //     // If one of the components does not implement decimals, we assume the worst
+            //     // and set minDecimals to 0
+            //     minDecimals = 0;
+            // }
 
             // Check the component has not already been added
             require(!tokenIsComponent(currentComponent));
@@ -199,7 +199,7 @@ contract SetToken is
     function getComponents()
         public
         view
-        returns(address[])
+        returns(address[] memory)
     {
         address[] memory componentAddresses = new address[](components.length);
 
@@ -218,7 +218,7 @@ contract SetToken is
     function getUnits()
         public
         view
-        returns(uint256[])
+        returns(uint256[] memory)
     {
         uint256[] memory units = new uint256[](components.length);
 

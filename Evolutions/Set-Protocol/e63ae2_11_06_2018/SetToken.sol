@@ -34,7 +34,7 @@ import "./AddressArrayUtils.sol";
  */
 contract SetToken is
     StandardToken,
-    DetailedERC20("", "", 18)
+    DetailedERC20
 {
     using SafeMath for uint256;
     using AddressArrayUtils for address[];
@@ -69,7 +69,7 @@ contract SetToken is
     }
 
     // Confirm that all inputs for creating a set are valid
-    modifier areValidCreationParameters(address[] _components, uint[] _units) {
+    modifier areValidCreationParameters(address[] memory _components, uint[] memory _units) {
         // Confirm an empty _components array is not passed
         require(
             _components.length > 0,
@@ -105,68 +105,6 @@ contract SetToken is
         _;
     }
 
-    /* ============ Constructor ============ */
-
-    /**
-     * @dev Constructor Function for the issuance of an {Set} token
-     * @param _components address[] A list of component address which you want to include
-     * @param _units uint[] A list of quantities in gWei of each component (corresponds to the {Set} of _components)
-     */
-    constructor(
-        address[] _components,
-        uint[] _units,
-        uint _naturalUnit
-    )
-        public
-        isNonZero(_naturalUnit)
-        areValidCreationParameters(_components, _units)
-    {
-        // As looping operations are expensive, checking for duplicates will be
-        // on the onus of the application developer
-
-        // NOTE: It will be the onus of developers to check whether the addressExists
-        // are in fact ERC20 addresses
-        uint8 minDecimals = 18;
-        uint8 currentDecimals;
-        for (uint16 i = 0; i < _units.length; i++) {
-            // Check that all units are non-zero. Negative numbers will underflow
-            uint currentUnits = _units[i];
-            require(currentUnits > 0, "Unit declarations must be non-zero");
-
-            // Check that all addresses are non-zero
-            address currentComponent = _components[i];
-            require(currentComponent != address(0), "Components must have non-zero address");
-
-            // Figure out which of the components has the minimum decimal value
-            if (currentComponent.call(bytes4(keccak256("decimals()")))) {
-                currentDecimals = DetailedERC20(currentComponent).decimals();
-                minDecimals = currentDecimals < minDecimals ? currentDecimals : minDecimals;
-            } else {
-                // If one of the components does not implement decimals, we assume the worst
-                // and set minDecimals to 0
-                minDecimals = 0;
-            }
-
-            // Check the component has not already been added
-            require(!tokenIsComponent(currentComponent));
-
-            // add component to isComponent mapping
-            isComponent[keccak256(currentComponent)] = true;
-
-            components.push(Component({
-                address_: currentComponent,
-                unit_: currentUnits
-            }));
-        }
-
-        // This is the minimum natural unit possible for a Set with these components.
-        require(
-            _naturalUnit >= 10**(18 - minDecimals),
-            "Set naturalUnit must be greater than minimum of component decimals"
-        );
-
-        naturalUnit = _naturalUnit;
-    }
 
     /* ============ Public Functions ============ */
 
@@ -190,12 +128,12 @@ contract SetToken is
         emit Transfer(msg.sender, address(0), quantity);
     }
 
-    /* ============ Getters ============ */
+    // /* ============ Getters ============ */
 
     function getComponents()
         public
         view
-        returns(address[])
+        returns(address[] memory)
     {
         address[] memory componentAddresses = new address[](components.length);
         for (uint16 i = 0; i < components.length; i++) {
@@ -207,7 +145,7 @@ contract SetToken is
     function getUnits()
         public
         view
-        returns(uint[])
+        returns(uint[] memory)
     {
         uint[] memory units = new uint[](components.length);
         for (uint16 i = 0; i < components.length; i++) {
@@ -216,7 +154,7 @@ contract SetToken is
         return units;
     }
 
-    /* ============ Transfer s ============ */
+    // /* ============ Transfer s ============ */
 
     function transfer(
         address _to,
@@ -250,7 +188,7 @@ contract SetToken is
         internal
         returns (bool)
     {
-        return isComponent[keccak256(_tokenAddress)];
+        // return isComponent[keccak256(_tokenAddress)];
     }
 
 }

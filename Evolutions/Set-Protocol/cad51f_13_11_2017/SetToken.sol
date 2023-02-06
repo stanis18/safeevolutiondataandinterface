@@ -1,9 +1,9 @@
-pragma solidity ^0.4.11;
+pragma solidity >=0.5.0 <0.9.0;
 
-import './lib/StandardToken.sol';
-import './lib/ERC20.sol';
-import './lib/SafeMath.sol';
-import './lib/Set.sol';
+import './StandardToken.sol';
+import './ERC20.sol';
+import './SafeMath.sol';
+import './Set.sol';
 
 /**
  * @title {Set}
@@ -19,7 +19,7 @@ contract SetToken is Set, StandardToken {
    * @param _tokens address[] A list of token address which you want to include
    * @param _units uint[] A list of quantities of each token (corresponds to the {Set} of _tokens)
    */  
-  function SetToken(address[] _tokens, uint[] _units) {
+  constructor (address[] memory _tokens, uint[] memory _units) public {
     // There must be tokens present
     require(_tokens.length > 0);
     
@@ -55,7 +55,7 @@ contract SetToken is Set, StandardToken {
       uint currentUnits = units[i];
 
       // The transaction will fail if any of the tokens fail to transfer
-      assert(ERC20(currentToken).transferFrom(msg.sender, this, currentUnits * quantity));      
+      assert(ERC20(currentToken).transferFrom(msg.sender, address(this), currentUnits * quantity));      
     }
 
     // If successful, increment the balance of the user’s {Set} token
@@ -64,7 +64,7 @@ contract SetToken is Set, StandardToken {
     // Increment the total token supply
     totalSupply = SafeMath.add(totalSupply, quantity);
 
-    LogIssuance(msg.sender, quantity);
+    emit LogIssuance(msg.sender, quantity);
 
     return true;
   }
@@ -94,7 +94,7 @@ contract SetToken is Set, StandardToken {
     // Decrement the total token supply
     totalSupply = SafeMath.sub(totalSupply, quantity);
 
-    LogRedemption(msg.sender, quantity);
+    emit LogRedemption(msg.sender, quantity);
 
     return true;
   }
